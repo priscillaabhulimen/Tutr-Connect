@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>332507461023-6tc2p16lrg3omf8jepab3mnenq2pjrf8.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.332507461023-6tc2p16lrg3omf8jepab3mnenq2pjrf8</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAopRW_fguaMNrdDdWlhM2RhRDctuLP9vw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>332507461023</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.tutrconnect</string>
+	<key>PROJECT_ID</key>
+	<string>tutr-977d4</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tutr-977d4.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:332507461023:ios:6e037851fbf8d928f6b9aa</string>
+	<key>DATABASE_URL</key>
+	<string>https://tutr-977d4.firebaseio.com</string>
+</dict>
+</plist>

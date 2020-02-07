@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "332507461023",
+    "firebase_url": "https://tutr-977d4.firebaseio.com",
+    "project_id": "tutr-977d4",
+    "storage_bucket": "tutr-977d4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332507461023:android:33d19c12a1f506c5f6b9aa",
+        "android_client_info": {
+          "package_name": "com.example.tutrconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "332507461023-kgrg073mpeff095shasbjqvarnpjm58h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tutrconnect",
+            "certificate_hash": "c7378fc7e0c87c12d745b8fd5227d1c564e4a612"
+          }
+        },
+        {
+          "client_id": "332507461023-g940tm3lmoigaup159mj4r1tvdutrgaa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsCBM58MF0HLLvQl81HXOMBlNKg3chrDg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332507461023-g940tm3lmoigaup159mj4r1tvdutrgaa.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "332507461023-6tc2p16lrg3omf8jepab3mnenq2pjrf8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tutrconnect"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
