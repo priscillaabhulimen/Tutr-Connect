@@ -15,7 +15,7 @@ class _SearchState extends State<Search> {
   TextEditingController searchController = TextEditingController();
   Future<QuerySnapshot> searchResultsFuture;
 
-  handleSearch(String query){
+  handleSearch (String query){
     Future<QuerySnapshot> users = usersRef
      .where('display name', isGreaterThanOrEqualTo: query)
         .getDocuments();
@@ -34,7 +34,7 @@ class _SearchState extends State<Search> {
       title: TextFormField(
         controller: searchController,
         decoration: InputDecoration(
-          hintText: 'Search...',
+          hintText: 'Search',
           filled: true,
           prefixIcon: Icon(
             Icons.account_box,
@@ -91,8 +91,21 @@ class _SearchState extends State<Search> {
           UserResult searchResult = UserResult(user);
           searchResults.add(searchResult);
         });
-        return ListView(
-          children: searchResults,
+        return Container(
+          color: Colors.white,
+          child: searchResults.isNotEmpty ? ListView(
+            children: searchResults,
+          ) : Center(
+             child: Text(
+              'No results available',
+              style: TextStyle(
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+                fontSize: 30.0
+              ),
+            ),
+          )
         );
       },
     );
@@ -117,14 +130,14 @@ class UserResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).accentColor.withOpacity(0.5),
+      color: Color(0xFF00C3C3),
       child: Column(
         children: <Widget>[
           GestureDetector(
             onTap: () => print('tapped'),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.blueGrey,
+                backgroundColor: Theme.of(context).accentColor,
                 backgroundImage: CachedNetworkImageProvider(user.photoUrl),
               ),
               title: Text(

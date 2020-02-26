@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Tutr Connect',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Color(0xFF2A23FF),
+        primaryColor: Color(0xFF4A23FF),
         accentColor: Color(0xFFFF69F5)
       ),
       home: Home()

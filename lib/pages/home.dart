@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -11,7 +12,9 @@ import 'package:tutr_connect/pages/timeline.dart';
 import 'package:tutr_connect/pages/upload.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
+final StorageReference storageRef = FirebaseStorage.instance.ref();
 final usersRef = Firestore.instance.collection('users');
+final postsRef = Firestore.instance.collection('posts');
 final DateTime timestamp = DateTime.now();
 User currentUser;
 //enables a number of methods allow users to login and logout
@@ -37,7 +40,7 @@ class _HomeState extends State<Home> {
     }, onError: (err) {
       print('Error signing in: $err');
     });
-    //Reauthenticate user when app is opened
+    //Re-authenticate user when app is opened
     googleSignIn.signInSilently(suppressErrors: false)
         //to resolve what comes back from executing signInSilently
         .then((account) {
@@ -124,13 +127,13 @@ class _HomeState extends State<Home> {
       body: PageView(
         children: <Widget>[
           //TODO figure out which of these I don't need and what I need to add
-          //Timeline(),
+//          Timeline(),
           RaisedButton(
             child: Text('Logout '),
             onPressed: logout,
           ),
           ActivityFeed(),
-          Upload(),
+          Upload(currentUser: currentUser),
           Search(),
           Profile(),
         ],
@@ -193,7 +196,7 @@ class _HomeState extends State<Home> {
                   fontFamily: 'Signatra', fontSize: 90.0, color: Colors.white),
             ),
             GestureDetector(
-              onTap: login(),
+              onTap: login,
               child: Container(
                 width: 260.0,
                 height: 60.0,
