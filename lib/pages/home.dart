@@ -75,7 +75,6 @@ class _HomeState extends State<Home> {
     if (!doc.exists) {
       final username = await Navigator.push(
           context, MaterialPageRoute(builder: (context) => CreateAccount()));
-
       //then get username from create account, use it to make new user document in users collection
       usersRef.document(user.id).setData({
         'id': user.id,
@@ -85,6 +84,10 @@ class _HomeState extends State<Home> {
         'display name': user.displayName,
         //TODO change to rating
         'rating': '',
+        'matricNumber': '',
+        'level': '',
+        'department': '',
+        'program': '',
         'timestamp': timestamp,
       });
       doc = await usersRef.document(user.id).get();
@@ -135,7 +138,7 @@ class _HomeState extends State<Home> {
           ActivityFeed(),
           Upload(currentUser: currentUser),
           Search(),
-          Profile(),
+          Profile(profileId: currentUser?.id),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,

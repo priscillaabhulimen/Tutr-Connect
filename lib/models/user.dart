@@ -7,6 +7,10 @@ class User {
   final String photoUrl;
   final String displayName;
   final String rating;
+  final String matriculationNumber;
+  final String department;
+  final String program;
+  final String level;
 
   User({
     this.id,
@@ -14,7 +18,11 @@ class User {
     this.email,
     this.photoUrl,
     this.displayName,
-    this.rating
+    this.rating,
+    this.matriculationNumber,
+    this.department,
+    this.program,
+    this.level,
 });
 
   factory User.fromDocument(DocumentSnapshot doc){
@@ -24,7 +32,11 @@ class User {
         username: doc['username'],
         photoUrl: doc['photoUrl'],
         displayName: doc['display name'],
-        rating: doc['rating']
+        rating: doc['rating'],
+        matriculationNumber: doc['matricNumber'],
+        department: doc['department'],
+        program: doc['program'],
+        level: doc['level']
       );
   }
 
