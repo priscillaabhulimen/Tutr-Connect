@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:tutr_connect/models/user.dart';
 import 'package:tutr_connect/pages/home.dart';
@@ -16,7 +17,7 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  var selectedDepartment, selectedProgram;
+  var selectedDepartment, selectedProgram, selectedLevel;
   TextEditingController displayNameController = TextEditingController();
   TextEditingController matricNumberController = TextEditingController();
   bool isLoading = false;
@@ -60,8 +61,7 @@ class _EditProfileState extends State<EditProfile> {
           controller: displayNameController,
           decoration: InputDecoration(
               hintText: 'Update Display name',
-            errorText: _displayNameValid ? null: 'Display name too short'
-          ),
+              errorText: _displayNameValid ? null : 'Display name too short'),
         )
       ],
     );
@@ -94,7 +94,11 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   buildProgramDropdown() {
-    return Text ('My Program');
+    return Text('My Program');
+  }
+
+  buildLevelDropdown() {
+    return Text('My level');
   }
 
   updateProfileData() {
@@ -108,13 +112,19 @@ class _EditProfileState extends State<EditProfile> {
     if (_displayNameValid) {
       usersRef.document(widget.currentUserId).updateData({
         'display name': displayNameController.text,
-//        'department': selectedDepartment,
-//        'program': selectedProgram,
+        'department': selectedDepartment,
+        'program': selectedProgram,
+        'level': selectedLevel,
         'matricNumber': matricNumberController.text,
       });
       SnackBar snackbar = SnackBar(content: Text('Profile Updated.'));
       _scaffoldKey.currentState.showSnackBar(snackbar);
     }
+  }
+
+  logout() async {
+    await googleSignIn.signOut();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
   @override
@@ -161,8 +171,149 @@ class _EditProfileState extends State<EditProfile> {
                             children: <Widget>[
                               buildDisplayNameField(),
                               buildMatricNumber(),
-                              buildDepartmentDropdown(),
-                              buildProgramDropdown(),
+                              StreamBuilder<QuerySnapshot>(
+                                stream: Firestore.instance
+                                    .collection('departments')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Text('Loading...');
+                                  } else {
+                                    List<DropdownMenuItem> departmentItems = [];
+                                    for (int i = 0;
+                                        i < snapshot.data.documents.length;
+                                        i++) {
+                                      DocumentSnapshot snap =
+                                          snapshot.data.documents[i];
+                                      departmentItems.add(DropdownMenuItem(
+                                        child: Text(
+                                          snap.documentID,
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontFamily: 'Raleway',
+                                          ),
+                                        ),
+                                        value: '${snap.documentID}',
+                                      ));
+                                    }
+                                    return DropdownButton(
+                                      items: departmentItems,
+                                      onChanged: (departmentValue) {
+                                        setState(() {
+                                          selectedDepartment = departmentValue;
+                                        });
+                                      },
+                                      value: selectedDepartment,
+                                      isExpanded: false,
+                                      hint: new Text(
+                                        'Choose your department',
+                                        style: TextStyle(
+                                            color: Colors.blueGrey,
+                                            fontFamily: 'Raleway'),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              SizedBox(height: 20.0),
+                              StreamBuilder<QuerySnapshot>(
+                                stream: Firestore.instance
+                                    .collection('departments')
+                                    .document(selectedDepartment)
+                                    .collection('programmes')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Text('Loading...');
+                                  } else {
+                                    List<DropdownMenuItem> programItems = [];
+                                    for (int i = 0;
+                                        i < snapshot.data.documents.length;
+                                        i++) {
+                                      DocumentSnapshot snap =
+                                          snapshot.data.documents[i];
+                                      programItems.add(DropdownMenuItem(
+                                        child: Text(
+                                          snap.documentID,
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontFamily: 'Raleway',
+                                          ),
+                                        ),
+                                        value: '${snap.documentID}',
+                                      ));
+                                    }
+                                    return DropdownButton(
+                                      items: programItems,
+                                      onChanged: (programValue) {
+                                        setState(() {
+                                          selectedProgram = programValue;
+                                        });
+                                      },
+                                      value: selectedProgram,
+                                      isExpanded: false,
+                                      hint: new Text(
+                                        'Choose your program',
+                                        style: TextStyle(
+                                            color: Colors.blueGrey,
+                                            fontFamily: 'Raleway'),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              SizedBox(height: 20.0),
+                              StreamBuilder<QuerySnapshot>(
+                                stream: Firestore.instance
+                                    .collection('departments')
+                                    .document(selectedDepartment)
+                                    .collection('programmes')
+                                    .document(selectedProgram)
+                                    .collection('levels')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Text('Loading...');
+                                  } else {
+                                    List<DropdownMenuItem> levelItems = [];
+                                    for (int i = 0;
+                                    i < snapshot.data.documents.length;
+                                    i++) {
+                                      DocumentSnapshot snap =
+                                      snapshot.data.documents[i];
+                                      levelItems.add(DropdownMenuItem(
+                                        child: Text(
+                                          snap.documentID,
+                                          style: TextStyle(
+                                            color:
+                                            Theme.of(context).primaryColor,
+                                            fontFamily: 'Raleway',
+                                          ),
+                                        ),
+                                        value: '${snap.documentID}',
+                                      ));
+                                    }
+                                    return DropdownButton(
+                                      items: levelItems,
+                                      onChanged: (levelValue) {
+                                        setState(() {
+                                          selectedLevel = levelValue;
+                                        });
+                                      },
+                                      value: selectedLevel,
+                                      isExpanded: false,
+                                      hint: new Text(
+                                        'Choose your level',
+                                        style: TextStyle(
+                                            color: Colors.blueGrey,
+                                            fontFamily: 'Raleway'),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -179,11 +330,10 @@ class _EditProfileState extends State<EditProfile> {
                             ),
                           ),
                         ),
-
                         Padding(
                           padding: EdgeInsets.all(16.0),
                           child: FlatButton.icon(
-                              onPressed: () => print('logout'),
+                              onPressed: logout,
                               icon: Icon(
                                 Icons.cancel,
                                 color: Colors.red,
