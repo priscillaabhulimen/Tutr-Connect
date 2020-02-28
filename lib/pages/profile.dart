@@ -1,10 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:tutr_connect/models/user.dart';
 import 'package:tutr_connect/pages/edit_profile.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/widgets/header.dart';
+import 'package:tutr_connect/widgets/post.dart';
+import 'package:tutr_connect/widgets/post_tile.dart';
 import 'package:tutr_connect/widgets/progress.dart';
 
 class Profile extends StatefulWidget {
@@ -17,6 +21,31 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final String currentUserId = currentUser?.id;
+  String postOrientation = 'grid';
+  bool isLoading = false;
+  int postCount = 0;
+  List<Post> posts = [];
+
+  @override
+  void initState(){
+    super.initState();
+    getProfilePosts();
+  }
+
+  getProfilePosts()async{
+    setState(() {
+      isLoading = true;
+    });
+     QuerySnapshot snapshot = await postsRef.document(widget.profileId)
+    .collection('userPosts')
+    .orderBy('timestamp', descending: true)
+    .getDocuments();
+     setState(() {
+       isLoading = false;
+       postCount = snapshot.documents.length;
+       posts =  snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
+     });
+  }
 
   Column buildCountColumn(String label, int count){
     return Column(
@@ -121,7 +150,7 @@ class _ProfileState extends State<Profile> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
-                            buildCountColumn('posts', 0),
+                            buildCountColumn('posts', postCount),
                             buildCountColumn('followers', 0),
                             buildCountColumn('following', 0),
                           ],
@@ -173,6 +202,101 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  buildProfilePosts(){
+    Orientation orientation = MediaQuery.of(context).orientation;
+    if(isLoading){
+      return circularProgress();
+    } else if(posts.isEmpty){
+      return Container(
+        color: Theme.of(context).accentColor.withOpacity(0.6),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SvgPicture.asset(
+              'assets/images/no_content.svg',
+              height: orientation == Orientation.portrait ? 260 : 150,
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 20.0),
+              child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'No Posts Yet',
+                    style: TextStyle(
+                        fontFamily: 'Raleway',
+                        color: Colors.white,
+                        fontSize: 40.0,
+                        fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+            ),
+          ],
+        ),
+      );
+    }
+    else if(postCount == 0){
+      return Container(
+        child: Center(
+          child: Text(
+            'No Posts Yet...',
+            style: TextStyle(
+              color: Colors.grey,
+              fontFamily: 'Raleway',
+              fontSize: 25.0
+            ),
+          )
+        ),
+      );
+    } else if(postOrientation == 'grid') {
+      List<GridTile> postGrid = [];
+      posts.forEach((post) {
+        postGrid.add(GridTile(child: PostTile(post)));
+      });
+      return GridView.count(
+        crossAxisCount: 3,
+        childAspectRatio: 1.0,
+        mainAxisSpacing: 1.5,
+        crossAxisSpacing: 1.5,
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        children: postGrid,
+      );
+    } else if(postOrientation == 'list') {
+      return Column(
+        children: posts,
+      );
+    }
+  }
+
+  setPostOrientation(String postOrientation){
+    setState(() {
+      this.postOrientation = postOrientation;
+    });
+  }
+
+  buildTogglePostOrientation(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        IconButton(
+            icon: Icon(Icons.grid_on,
+              color: postOrientation == 'grid' ? Theme.of(context).primaryColor :
+              Colors.grey
+            ),
+            onPressed: () => setPostOrientation('grid'),
+        ),
+        IconButton(
+            icon: Icon(Icons.list,
+              color: postOrientation == 'list' ? Theme.of(context).primaryColor :
+              Colors.grey
+            ),
+            onPressed: () => setPostOrientation('list'),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,6 +304,12 @@ class _ProfileState extends State<Profile> {
       body: ListView(
         children: <Widget>[
           buildProfileHeader(),
+          Divider(),
+          buildTogglePostOrientation(),
+          Divider(
+            height: 0.0,
+          ),
+          buildProfilePosts(),
         ],
       ),
     );

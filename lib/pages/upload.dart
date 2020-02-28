@@ -69,7 +69,7 @@ class _UploadState extends State<Upload> {
                 height: 4.0,
               ),
               SimpleDialogOption(
-                child: Text('cancel'),
+                child: Text('Cancel'),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -206,7 +206,7 @@ class _UploadState extends State<Upload> {
             width: MediaQuery.of(context).size.width * 0.8,
             child: Center(
               child: AspectRatio(
-                aspectRatio: 11 / 9,
+                aspectRatio: 16 / 9,
                 child: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
