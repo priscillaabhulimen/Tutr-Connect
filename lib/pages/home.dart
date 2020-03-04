@@ -3,20 +3,22 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tutr_connect/models/user.dart';
 import 'package:tutr_connect/pages/activity_feed.dart';
 import 'package:tutr_connect/pages/create_account.dart';
 import 'package:tutr_connect/pages/profile.dart';
 import 'package:tutr_connect/pages/search.dart';
-import 'package:tutr_connect/models/user.dart';
-import 'package:tutr_connect/pages/timeline.dart';
 import 'package:tutr_connect/pages/upload.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final StorageReference storageRef = FirebaseStorage.instance.ref();
 final usersRef = Firestore.instance.collection('users');
 final postsRef = Firestore.instance.collection('posts');
+final messagesRef = Firestore.instance.collection('messages');
 final commentsRef = Firestore.instance.collection('comments');
 final activityFeedRef = Firestore.instance.collection('feed');
+final followersRef = Firestore.instance.collection('followers');
+final followingRef = Firestore.instance.collection('following');
 final DateTime timestamp = DateTime.now();
 User currentUser;
 //enables a number of methods allow users to login and logout
@@ -96,8 +98,6 @@ class _HomeState extends State<Home> {
     }
 
     currentUser = User.fromDocument(doc);
-    print(currentUser);
-    print(currentUser.username);
   }
 
   @override

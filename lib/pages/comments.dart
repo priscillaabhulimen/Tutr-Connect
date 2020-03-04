@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:tutr_connect/pages/activity_feed.dart';
 import 'package:tutr_connect/widgets/header.dart';
 import 'package:tutr_connect/widgets/progress.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 import 'home.dart';
 
@@ -32,23 +33,23 @@ class CommentsState extends State<Comments> {
 
   buildComments() {
     return StreamBuilder(
-      stream: commentsRef
-          .document(postId)
-          .collection('comments')
-          .orderBy('timestamp', descending: false)
-          .snapshots(),
-      builder: (context, snapshot){
-        if(!snapshot.hasData){
-          return circularProgress();
-        }
-        List<Comment> comments = [];
-        snapshot.data.documents.forEach((doc){
-          comments.add(Comment.fromDocument(doc));
+        stream: commentsRef
+            .document(postId)
+            .collection('comments')
+            .orderBy('timestamp', descending: false)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return circularProgress();
+          }
+          List<Comment> comments = [];
+          snapshot.data.documents.forEach((doc) {
+            comments.add(Comment.fromDocument(doc));
+          });
+          return ListView(
+            children: comments,
+          );
         });
-        return ListView(
-          children: comments,
-        );
-      });
   }
 
   addComment() {
@@ -60,11 +61,8 @@ class CommentsState extends State<Comments> {
       'userId': currentUser.id
     });
     bool isNotPostOwner = postOwnerId != currentUser.id;
-    if(isNotPostOwner){
-      activityFeedRef
-          .document(postOwnerId)
-          .collection('feedItems')
-          .add({
+    if (isNotPostOwner) {
+      activityFeedRef.document(postOwnerId).collection('feedItems').add({
         'type': 'comment',
         'commentData': commentController.text,
         'username': currentUser.username,
@@ -117,14 +115,14 @@ class Comment extends StatelessWidget {
   final Timestamp timestamp;
 
   Comment({
-   this.username,
-   this.userId,
-   this.avatarUrl,
-   this.comment,
-   this.timestamp,
+    this.username,
+    this.userId,
+    this.avatarUrl,
+    this.comment,
+    this.timestamp,
   });
 
-  factory Comment.fromDocument(DocumentSnapshot doc){
+  factory Comment.fromDocument(DocumentSnapshot doc) {
     return Comment(
       username: doc['username'],
       userId: doc['userId'],
@@ -141,13 +139,14 @@ class Comment extends StatelessWidget {
         ListTile(
           title: Text(
             comment,
-             style: TextStyle(
-               fontFamily: 'Raleway'
-             ),
+            style: TextStyle(fontFamily: 'Raleway'),
           ),
-          leading: CircleAvatar(
-            backgroundColor: Color(0xFF00C3C3),
-            backgroundImage: CachedNetworkImageProvider(avatarUrl),
+          leading: GestureDetector(
+            onTap: () => showProfile(context, profileId: userId),
+            child: CircleAvatar(
+              backgroundColor: Color(0xFF00C3C3),
+              backgroundImage: CachedNetworkImageProvider(avatarUrl),
+            ),
           ),
           subtitle: Text(timeago.format(timestamp.toDate())),
         ),

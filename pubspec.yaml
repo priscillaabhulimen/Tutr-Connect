@@ -20,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  shared_preferences:
   cloud_firestore: ^0.9.7+2
   image_picker: ^0.6.0+2
   firebase_storage: ^2.1.0+1

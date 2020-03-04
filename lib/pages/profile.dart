@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tutr_connect/models/user.dart';
+import 'package:tutr_connect/pages/chat/chat_screen.dart';
+import 'package:tutr_connect/pages/chat/recent_chat.dart';
 import 'package:tutr_connect/pages/edit_profile.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/widgets/header.dart';
@@ -20,34 +22,72 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  bool isFollowing = false;
   final String currentUserId = currentUser?.id;
   String postOrientation = 'grid';
   bool isLoading = false;
   int postCount = 0;
+  int followerCount = 0;
+  int followingCount = 0;
   List<Post> posts = [];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     getProfilePosts();
+    getFollowers();
+    getFollowing();
+    checkIfFollowing();
   }
 
-  getProfilePosts()async{
+  getFollowers() async {
+    QuerySnapshot snapshot = await followersRef
+        .document(widget.profileId)
+        .collection('userFollowers')
+        .getDocuments();
+    setState(() {
+      followerCount = snapshot.documents.length;
+    });
+  }
+
+  getFollowing() async {
+    QuerySnapshot snapshot = await followingRef
+        .document(widget.profileId)
+        .collection('userFollowing')
+        .getDocuments();
+    setState(() {
+      followingCount = snapshot.documents.length;
+    });
+  }
+
+  checkIfFollowing() async {
+    DocumentSnapshot doc = await followersRef
+        .document(widget.profileId)
+        .collection('userFollowers')
+        .document(currentUserId)
+        .get();
+    setState(() {
+      isFollowing = doc.exists;
+    });
+  }
+
+  getProfilePosts() async {
     setState(() {
       isLoading = true;
     });
-     QuerySnapshot snapshot = await postsRef.document(widget.profileId)
-    .collection('userPosts')
-    .orderBy('timestamp', descending: true)
-    .getDocuments();
-     setState(() {
-       isLoading = false;
-       postCount = snapshot.documents.length;
-       posts =  snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
-     });
+    QuerySnapshot snapshot = await postsRef
+        .document(widget.profileId)
+        .collection('userPosts')
+        .orderBy('timestamp', descending: true)
+        .getDocuments();
+    setState(() {
+      isLoading = false;
+      postCount = snapshot.documents.length;
+      posts = snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
+    });
   }
 
-  Column buildCountColumn(String label, int count){
+  Column buildCountColumn(String label, int count) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -74,15 +114,16 @@ class _ProfileState extends State<Profile> {
         )
       ],
     );
-
   }
 
-  editProfile(){
-    Navigator.push(context, MaterialPageRoute(builder:
-        (context) => EditProfile(currentUserId: currentUserId)));
+  editProfile() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditProfile(currentUserId: currentUserId)));
   }
 
-  Container buildButton({String text, Function function}){
+  Container buildButton({String text, Function function}) {
     return Container(
       padding: EdgeInsets.only(top: 2.0),
       child: FlatButton(
@@ -94,53 +135,132 @@ class _ProfileState extends State<Profile> {
           child: Text(
             text,
             style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Raleway',
-              fontWeight: FontWeight.bold
-            ),
+                color: isFollowing ? Colors.black : Colors.white,
+                fontFamily: 'Raleway',
+                fontWeight: FontWeight.bold),
           ),
           decoration: BoxDecoration(
-            color: Theme.of(context).accentColor,
-            border: Border.all(
-              color: Theme.of(context).accentColor,
-            ),
-            borderRadius: BorderRadius.circular(5.0)
-          ),
+              color: isFollowing ? Colors.white : Theme.of(context).accentColor,
+              border: Border.all(
+                color:
+                    isFollowing ? Colors.grey : Theme.of(context).accentColor,
+              ),
+              borderRadius: BorderRadius.circular(5.0)),
         ),
       ),
     );
   }
 
-  buildProfileButton(){
+  buildProfileButton() {
     // viewing your own profile - should show edit profile button
     bool isProfileOwner = currentUserId == widget.profileId;
-    if (isProfileOwner){
+    if (isProfileOwner) {
       return buildButton(
         text: 'Edit Profile',
         function: editProfile,
       );
+    } else if (isFollowing) {
+      return buildButton(
+        text: 'Unfollow',
+        function: handleUnfollowUser,
+      );
+    } else if (!isFollowing) {
+      return buildButton(
+        text: 'Follow',
+        function: handleFollowUser,
+      );
     }
   }
 
-  buildProfileHeader(){
+  handleFollowUser() {
+    setState(() {
+      isFollowing = true;
+    });
+    //Make auth user follower of ANOTHER user (update THEIR activity feed followers collection)
+    followersRef
+        .document(widget.profileId)
+        .collection('userFollowers')
+        .document(currentUserId)
+        .setData({});
+    //Put that user on your following collection (update your following collection)
+    followingRef
+        .document(currentUserId)
+        .collection('userFollowing')
+        .document(widget.profileId)
+        .setData({});
+    //add activity feed item to notify about new user following (us)
+    activityFeedRef
+        .document(widget.profileId)
+        .collection('feedItems')
+        .document(currentUserId)
+        .setData({
+      'type': 'follow',
+      'ownerId': widget.profileId,
+      'username': currentUser.username,
+      'userId': currentUserId,
+      'userProfileImg': currentUser.photoUrl,
+      'timestamp': timestamp,
+    });
+  }
+
+  handleUnfollowUser() {
+    setState(() {
+      isFollowing = false;
+    });
+    //remove follower
+    followersRef
+        .document(widget.profileId)
+        .collection('userFollowers')
+        .document(currentUserId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    //remove following
+    followingRef
+        .document(currentUserId)
+        .collection('userFollowing')
+        .document(widget.profileId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    //delete activity feed item for them
+    activityFeedRef
+        .document(widget.profileId)
+        .collection('feedItems')
+        .document(currentUserId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
+
+  buildProfileHeader() {
+    bool isProfileOwner = currentUserId == widget.profileId;
     return FutureBuilder(
       future: usersRef.document(widget.profileId).get(),
-      builder: (context, snapshot){
-        if (!snapshot.hasData){
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
           return circularProgress();
         }
         User user = User.fromDocument(snapshot.data);
         return Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.only(top: 16.0, left: 16.0),
           child: Column(
             children: <Widget>[
               Row(
                 children: <Widget>[
                   CircleAvatar(
-                    radius: 40.0,
+                    radius: 50.0,
                     backgroundColor: Theme.of(context).accentColor,
-                    backgroundImage: CachedNetworkImageProvider
-                      (user.photoUrl),
+                    backgroundImage: CachedNetworkImageProvider(user.photoUrl),
                   ),
                   Expanded(
                     flex: 1,
@@ -151,40 +271,93 @@ class _ProfileState extends State<Profile> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
                             buildCountColumn('posts', postCount),
-                            buildCountColumn('followers', 0),
-                            buildCountColumn('following', 0),
+                            buildCountColumn('followers', followerCount),
+                            buildCountColumn('following', followingCount),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            buildProfileButton()
-                          ],
-                        ),
+                        buildProfileButton(),
+                        isProfileOwner
+                            ? FlatButton(
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => RecentChats(
+                                              thisUserId: currentUserId,
+                                            ))),
+                                child: Container(
+                                  width: 250.0,
+                                  height: 27.0,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Open recent chats',
+                                    style: TextStyle(
+                                        color: isFollowing
+                                            ? Colors.black
+                                            : Colors.white,
+                                        fontFamily: 'Raleway',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).accentColor,
+                                      border: Border.all(
+                                        color: Theme.of(context).accentColor,
+                                      ),
+                                      borderRadius: BorderRadius.circular(5.0)),
+                                ),
+                              )
+                            : FlatButton(
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Chats(
+                                          peerAvatar: user.photoUrl,
+                                          peerName: user.username,
+                                          peerId: user.id,
+                                          messageOwnerId: currentUser.id,
+                                            ))),
+                                child: Container(
+                                  width: 250.0,
+                                  height: 27.0,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Send a message',
+                                    style: TextStyle(
+                                        color: isFollowing
+                                            ? Colors.black
+                                            : Colors.white,
+                                        fontFamily: 'Raleway',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).accentColor,
+                                      border: Border.all(
+                                        color: Theme.of(context).accentColor,
+                                      ),
+                                      borderRadius: BorderRadius.circular(5.0)),
+                                ),
+                              ),
                       ],
                     ),
                   ),
                 ],
               ),
               Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(top: 12.0),
-                child: Text(
-                  user.username,
-                  style: TextStyle(
-                    fontFamily: 'Raleway',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0
-                  ),
-                )
-              ),
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(top: 12.0),
+                  child: Text(
+                    user.username,
+                    style: TextStyle(
+                        fontFamily: 'Raleway',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
+                  )),
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(top: 4.0),
                 child: Text(
                   user.displayName,
                   style: TextStyle(
-                      fontFamily: 'Raleway',
+                    fontFamily: 'Raleway',
                   ),
                 ),
               ),
@@ -202,11 +375,11 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  buildProfilePosts(){
+  buildProfilePosts() {
     Orientation orientation = MediaQuery.of(context).orientation;
-    if(isLoading){
+    if (isLoading) {
       return circularProgress();
-    } else if(posts.isEmpty){
+    } else if (posts.isEmpty) {
       return Container(
         color: Theme.of(context).accentColor.withOpacity(0.6),
         child: Column(
@@ -214,41 +387,29 @@ class _ProfileState extends State<Profile> {
           children: <Widget>[
             SvgPicture.asset(
               'assets/images/no_content.svg',
-              height: orientation == Orientation.portrait ? 260 : 150,
+              height: orientation == Orientation.portrait
+                  ? MediaQuery.of(context).size.height * 0.8
+                  : MediaQuery.of(context).size.height * 0.5,
             ),
             Padding(
               padding: EdgeInsets.only(top: 20.0),
               child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'No Posts Yet',
-                    style: TextStyle(
-                        fontFamily: 'Raleway',
-                        color: Colors.white,
-                        fontSize: 40.0,
-                        fontWeight: FontWeight.bold,
-                    ),
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'No Posts Yet',
+                  style: TextStyle(
+                    fontFamily: 'Raleway',
+                    color: Colors.white,
+                    fontSize: 40.0,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
             ),
           ],
         ),
       );
-    }
-    else if(postCount == 0){
-      return Container(
-        child: Center(
-          child: Text(
-            'No Posts Yet...',
-            style: TextStyle(
-              color: Colors.grey,
-              fontFamily: 'Raleway',
-              fontSize: 25.0
-            ),
-          )
-        ),
-      );
-    } else if(postOrientation == 'grid') {
+    } else if (postOrientation == 'grid') {
       List<GridTile> postGrid = [];
       posts.forEach((post) {
         postGrid.add(GridTile(child: PostTile(post)));
@@ -262,36 +423,36 @@ class _ProfileState extends State<Profile> {
         physics: NeverScrollableScrollPhysics(),
         children: postGrid,
       );
-    } else if(postOrientation == 'list') {
+    } else if (postOrientation == 'list') {
       return Column(
         children: posts,
       );
     }
   }
 
-  setPostOrientation(String postOrientation){
+  setPostOrientation(String postOrientation) {
     setState(() {
       this.postOrientation = postOrientation;
     });
   }
 
-  buildTogglePostOrientation(){
+  buildTogglePostOrientation() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         IconButton(
-            icon: Icon(Icons.grid_on,
-              color: postOrientation == 'grid' ? Theme.of(context).primaryColor :
-              Colors.grey
-            ),
-            onPressed: () => setPostOrientation('grid'),
+          icon: Icon(Icons.grid_on,
+              color: postOrientation == 'grid'
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey),
+          onPressed: () => setPostOrientation('grid'),
         ),
         IconButton(
-            icon: Icon(Icons.list,
-              color: postOrientation == 'list' ? Theme.of(context).primaryColor :
-              Colors.grey
-            ),
-            onPressed: () => setPostOrientation('list'),
+          icon: Icon(Icons.list,
+              color: postOrientation == 'list'
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey),
+          onPressed: () => setPostOrientation('list'),
         ),
       ],
     );
@@ -300,7 +461,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: header(context,titleText: 'Profile'),
+      appBar: header(context, titleText: 'Profile'),
       body: ListView(
         children: <Widget>[
           buildProfileHeader(),

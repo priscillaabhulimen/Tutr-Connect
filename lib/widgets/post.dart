@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:animator/animator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tutr_connect/models/user.dart';
+import 'package:tutr_connect/pages/activity_feed.dart';
 import 'package:tutr_connect/pages/comments.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/widgets/custom_image.dart';
@@ -99,7 +99,7 @@ class _PostState extends State<Post> {
             backgroundColor: Color(0xFF00C3C3),
           ),
           title: GestureDetector(
-            onTap: () => print('showing profile'),
+            onTap: () => showProfile(context, profileId: user.id),
             child: Text(
               user.username,
               style: TextStyle(
@@ -158,7 +158,7 @@ class _PostState extends State<Post> {
     // like made by other user (to avoid getting notification for
     // our own like)
     bool isNotPostOwner = currentUserId != ownerId;
-    if(isNotPostOwner){
+    if (isNotPostOwner) {
       activityFeedRef
           .document(ownerId)
           .collection('feedItems')
@@ -180,7 +180,7 @@ class _PostState extends State<Post> {
     // like made by other user (to avoid getting notification for
     // our own like)
     bool isNotPostOwner = currentUserId != ownerId;
-    if(isNotPostOwner){
+    if (isNotPostOwner) {
       activityFeedRef
           .document(ownerId)
           .collection('feedItems')
@@ -202,21 +202,12 @@ class _PostState extends State<Post> {
         children: <Widget>[
           cachedNetworkImage(mediaUrl),
           showHeart
-              ? Animator(
-                  duration: Duration(milliseconds: 300),
-                  tween: Tween(begin: 0.7, end: 1.5),
-                  curve: Curves.elasticOut,
-                  cycles: 0,
-                  builder: (anim) => Transform.scale(
-                    scale: anim.value,
-                    child: Icon(
-                      Icons.favorite,
-                      size: 80.0,
-                      color: Colors.red,
-                    ),
-                  ),
+              ? Icon(
+                  Icons.favorite,
+                  size: 80.0,
+                  color: Colors.red,
                 )
-              : Text(''),
+              : Text('')
         ],
       ),
     );
