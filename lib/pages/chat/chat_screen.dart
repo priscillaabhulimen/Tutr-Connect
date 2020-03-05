@@ -148,44 +148,7 @@ class _ChatsState extends State<Chats> {
     messageController.clear();
   }
 
-  addMessageToRecentChats(){
-    bool isMessageSender = messageOwnerId != peerId;
-    if(isMessageSender){
-      messageFeedRef
-          .document(currentUser.id)
-          .collection('recents')
-          .document(peerId)
-          .collection('recentMessages')
-          .add({
-        'type': '',
-        'receiverName': peerName,
-        'receiverId': peerId,
-        'peerAvatar': peerAvatar,
-        'messageData': messageController.text,
-        'senderName': currentUser.username,
-        'senderId': currentUser.id,
-        'messageId': messageId,
-        'timestamp': DateTime.now(),
-      });
-    } else {
-      messageFeedRef
-          .document(currentUser.id)
-          .collection('recents')
-          .document(peerId)
-          .collection('recentMessages')
-          .add({
-        'type': '',
-        'receiverName': currentUser.username,
-        'receiverId': currentUser.id,
-        'peerAvatar': peerAvatar,
-        'messageData': messageController.text,
-        'senderName': peerName,
-        'senderId': peerId,
-        'messageId': messageId,
-        'timestamp': DateTime.now(),
-      });
-    }
-  }
+  addMessageToRecentChats(){}
 
   @override
   Widget build(BuildContext context) {

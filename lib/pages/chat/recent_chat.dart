@@ -33,8 +33,6 @@ class _RecentChatsState extends State<RecentChats> {
       QuerySnapshot snapshot = await messageFeedRef
           .document(currentUser.id)
           .collection('recents')
-          .document(peerId)
-          .collection('recentMessages')
           .orderBy('timestamp', descending: true)
           .limit(30)
           .getDocuments();
@@ -52,7 +50,7 @@ class _RecentChatsState extends State<RecentChats> {
         title: Text('Recent Chats'),
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.of(context).pop
+            onPressed: () => Navigator.pop(context),
         ),
       ),
       body: FutureBuilder(
