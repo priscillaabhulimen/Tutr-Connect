@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/widgets/progress.dart';
+import 'package:uuid/uuid.dart';
 
 class Chats extends StatefulWidget {
   final String peerName;
@@ -26,8 +27,8 @@ class _ChatsState extends State<Chats> {
   final String peerName;
   final String peerId;
   final String peerAvatar;
-  final String messageId;
   final String messageOwnerId;
+  String messageId = Uuid().v4();
   Future<QuerySnapshot> searchResultsFuture;
   TextEditingController messageController = TextEditingController();
 
@@ -35,7 +36,6 @@ class _ChatsState extends State<Chats> {
     this.peerName,
     this.peerId,
     this.peerAvatar,
-    this.messageId,
     this.messageOwnerId,
   });
 
@@ -81,9 +81,10 @@ class _ChatsState extends State<Chats> {
         .collection('userMessages')
         .add({
       'senderName': currentUser.username,
+      'messageId': messageId,
       'receiverName': peerName,
       'message': messageController.text,
-      'timestamp': timestamp,
+      'timestamp': DateTime.now(),
       'senderAvatar': currentUser.photoUrl,
       'receiverId': peerId,
       'messageType': 'sending'
@@ -96,13 +97,16 @@ class _ChatsState extends State<Chats> {
         .collection('userMessages')
         .add({
       'senderName': currentUser.username,
+      'messageId': messageId,
       'receiverName': peerName,
       'message': messageController.text,
-      'timestamp': timestamp,
+      'timestamp': DateTime.now(),
       'senderAvatar': currentUser.photoUrl,
       'receiverId': peerId,
       'messageType': 'receiving'
     });
+
+    addMessageToRecentChats();
     messageController.clear();
   }
 
@@ -115,9 +119,10 @@ class _ChatsState extends State<Chats> {
         .collection('userMessages')
         .add({
       'senderName': peerName,
+      'messageId': messageId,
       'receiverName': currentUser.username,
       'message': messageController.text,
-      'timestamp': timestamp,
+      'timestamp': DateTime.now(),
       'senderAvatar': peerAvatar,
       'receiverId': currentUser.id,
       'messageType': 'sending'
@@ -130,14 +135,56 @@ class _ChatsState extends State<Chats> {
         .collection('userMessages')
         .add({
       'senderName': peerName,
+      'messageId': messageId,
       'receiverName': currentUser.username,
       'message': messageController.text,
-      'timestamp': timestamp,
+      'timestamp': DateTime.now(),
       'senderAvatar': peerAvatar,
       'receiverId': currentUser.id,
       'messageType': 'receiving'
     });
+
+    addMessageToRecentChats();
     messageController.clear();
+  }
+
+  addMessageToRecentChats(){
+    bool isMessageSender = messageOwnerId != peerId;
+    if(isMessageSender){
+      messageFeedRef
+          .document(currentUser.id)
+          .collection('recents')
+          .document(peerId)
+          .collection('recentMessages')
+          .add({
+        'type': '',
+        'receiverName': peerName,
+        'receiverId': peerId,
+        'peerAvatar': peerAvatar,
+        'messageData': messageController.text,
+        'senderName': currentUser.username,
+        'senderId': currentUser.id,
+        'messageId': messageId,
+        'timestamp': DateTime.now(),
+      });
+    } else {
+      messageFeedRef
+          .document(currentUser.id)
+          .collection('recents')
+          .document(peerId)
+          .collection('recentMessages')
+          .add({
+        'type': '',
+        'receiverName': currentUser.username,
+        'receiverId': currentUser.id,
+        'peerAvatar': peerAvatar,
+        'messageData': messageController.text,
+        'senderName': peerName,
+        'senderId': peerId,
+        'messageId': messageId,
+        'timestamp': DateTime.now(),
+      });
+    }
   }
 
   @override
@@ -175,6 +222,7 @@ class _ChatsState extends State<Chats> {
 
 class Message extends StatelessWidget {
   final String senderName;
+  final String messageId;
   final String receiverId;
   final String senderAvatar;
   final String message;
@@ -183,6 +231,7 @@ class Message extends StatelessWidget {
 
   Message(
       {this.senderName,
+      this.messageId,
       this.receiverId,
       this.senderAvatar,
       this.message,
@@ -210,12 +259,12 @@ class Message extends StatelessWidget {
       children: <Widget>[
         Container(
           margin: messageType == 'sending'
-              ? EdgeInsets.only(left: 40.0, top: 4.0)
-              : EdgeInsets.only(right: 40.0, top: 4.0),
+              ? EdgeInsets.only(left: 40.0, top: 10.0)
+              : EdgeInsets.only(right: 40.0, top: 10.0),
           decoration: BoxDecoration(
               color: messageType == 'sending'
                   ? Color(0xFFB0E0E6)
-                  : Theme.of(context).accentColor,
+                  : Colors.blueGrey.withOpacity(0.4),
               borderRadius: messageType == 'sending'
                   ? BorderRadius.only(
                       topLeft: Radius.circular(25.0),
@@ -232,7 +281,10 @@ class Message extends StatelessWidget {
                     style: TextStyle(fontSize: 10.0, fontFamily: 'Raleway')),
             title: Text(
               message,
-              style: TextStyle(fontSize: 12.0, fontFamily: 'Raleway', fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 12.0,
+                  fontFamily: 'Raleway',
+                  fontWeight: FontWeight.bold),
             ),
             trailing: messageType == 'sending'
                 ? Text(

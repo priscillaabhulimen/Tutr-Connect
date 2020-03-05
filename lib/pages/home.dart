@@ -17,9 +17,10 @@ final postsRef = Firestore.instance.collection('posts');
 final messagesRef = Firestore.instance.collection('messages');
 final commentsRef = Firestore.instance.collection('comments');
 final activityFeedRef = Firestore.instance.collection('feed');
+final messageFeedRef = Firestore.instance.collection('recent');
 final followersRef = Firestore.instance.collection('followers');
 final followingRef = Firestore.instance.collection('following');
-final DateTime timestamp = DateTime.now();
+DateTime timestamp = DateTime.now();
 User currentUser;
 //enables a number of methods allow users to login and logout
 

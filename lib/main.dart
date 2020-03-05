@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:tutr_connect/pages/home.dart';
 
 
-
 void main() {
+  runApp(MyApp());
   Firestore.instance.settings(timestampsInSnapshotsEnabled: true).then((_) {
     print('Timestamps enabled in snapshots\n');
   }, onError: (_){
     print('Error enabling timestamps in snapshots\n');
   });
-  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -20,8 +19,8 @@ class MyApp extends StatelessWidget {
       title: 'Tutr Connect',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Color(0xFF4A23FF),
-        accentColor: Color(0xFFFF69F5)
+        primaryColor: Color(0xFF301BFF),
+        accentColor: Color(0xFFFFA0F9)
       ),
       home: Home()
     );

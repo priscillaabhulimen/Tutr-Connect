@@ -15,6 +15,7 @@ import 'package:tutr_connect/widgets/progress.dart';
 
 class Profile extends StatefulWidget {
   final String profileId;
+
   Profile({this.profileId});
 
   @override
@@ -283,6 +284,7 @@ class _ProfileState extends State<Profile> {
                                     MaterialPageRoute(
                                         builder: (context) => RecentChats(
                                               thisUserId: currentUserId,
+                                              peerId: user.id,
                                             ))),
                                 child: Container(
                                   width: 250.0,
@@ -310,10 +312,10 @@ class _ProfileState extends State<Profile> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => Chats(
-                                          peerAvatar: user.photoUrl,
-                                          peerName: user.username,
-                                          peerId: user.id,
-                                          messageOwnerId: currentUser.id,
+                                              peerAvatar: user.photoUrl,
+                                              peerName: user.username,
+                                              peerId: user.id,
+                                              messageOwnerId: currentUser.id,
                                             ))),
                                 child: Container(
                                   width: 250.0,

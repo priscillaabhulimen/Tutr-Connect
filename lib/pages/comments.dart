@@ -56,7 +56,7 @@ class CommentsState extends State<Comments> {
     commentsRef.document(postId).collection('comments').add({
       'username': currentUser.username,
       'comment': commentController.text,
-      'timestamp': timestamp,
+      'timestamp': DateTime.now(),
       'avatarUrl': currentUser.photoUrl,
       'userId': currentUser.id
     });
@@ -70,7 +70,7 @@ class CommentsState extends State<Comments> {
         'userProfileImg': currentUser.photoUrl,
         'postId': postId,
         'mediaUrl': postMediaUrl,
-        'timestamp': timestamp,
+        'timestamp': DateTime.now(),
       });
     }
     commentController.clear();

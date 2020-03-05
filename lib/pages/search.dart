@@ -115,7 +115,7 @@ class _SearchState extends State<Search> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF00C3C3),
+      backgroundColor: Color(0xFF1CE3E3),
       appBar: buildSearchField(),
       body:
         searchResultsFuture == null ? buildNoContent() : buildSearchResults(),
