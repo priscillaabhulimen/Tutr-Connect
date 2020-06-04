@@ -66,7 +66,7 @@ exports.onDeleteFollower = functions.firestore
       });
   });
 
-//when a post is created, add posr to timeline of each follower (of post owner)
+//when a post is created, add post to timeline of each follower (of post owner)
 exports.onCreatePost = functions.firestore
   .document('/posts/{userId}/userPosts/{postId}')
   .onCreate(async (snapshot, context) => {
