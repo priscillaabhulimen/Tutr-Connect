@@ -90,15 +90,153 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   buildDepartmentDropdown() {
-    return Text('My Department');
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('departments')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Text('Loading...');
+        } else {
+          List<DropdownMenuItem> departmentItems = [];
+          for (int i = 0;
+              i < snapshot.data.documents.length;
+              i++) {
+            DocumentSnapshot snap =
+                snapshot.data.documents[i];
+            departmentItems.add(DropdownMenuItem(
+              child: Text(
+                snap.documentID,
+                style: TextStyle(
+                  color:
+                      Theme.of(context).primaryColor,
+                  fontFamily: 'Raleway',
+                ),
+              ),
+              value: '${snap.documentID}',
+            ));
+          }
+          return DropdownButton(
+            items: departmentItems,
+            onChanged: (departmentValue) {
+              setState(() {
+                selectedDepartment = departmentValue;
+              });
+            },
+            value: selectedDepartment,
+            isExpanded: false,
+            hint: new Text(
+              'Choose your department',
+              style: TextStyle(
+                  color: Colors.blueGrey,
+                  fontFamily: 'Raleway'),
+            ),
+          );
+        }
+      },
+    );
   }
 
   buildProgramDropdown() {
-    return Text('My Program');
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('departments')
+          .document(selectedDepartment)
+          .collection('programmes')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Text('Loading...');
+        } else {
+          List<DropdownMenuItem> programItems = [];
+          for (int i = 0;
+              i < snapshot.data.documents.length;
+              i++) {
+            DocumentSnapshot snap =
+                snapshot.data.documents[i];
+            programItems.add(DropdownMenuItem(
+              child: Text(
+                snap.documentID,
+                style: TextStyle(
+                  color:
+                      Theme.of(context).primaryColor,
+                  fontFamily: 'Raleway',
+                ),
+              ),
+              value: '${snap.documentID}',
+            ));
+          }
+          return DropdownButton(
+            items: programItems,
+            onChanged: (programValue) {
+              setState(() {
+                selectedProgram = programValue;
+              });
+            },
+            value: selectedProgram,
+            isExpanded: false,
+            hint: new Text(
+              'Choose your program',
+              style: TextStyle(
+                  color: Colors.blueGrey,
+                  fontFamily: 'Raleway'),
+            ),
+          );
+        }
+      },
+    );
   }
 
   buildLevelDropdown() {
-    return Text('My level');
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('departments')
+          .document(selectedDepartment)
+          .collection('programmes')
+          .document(selectedProgram)
+          .collection('levels')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Text('Loading...');
+        } else {
+          List<DropdownMenuItem> levelItems = [];
+          for (int i = 0;
+          i < snapshot.data.documents.length;
+          i++) {
+            DocumentSnapshot snap =
+            snapshot.data.documents[i];
+            levelItems.add(DropdownMenuItem(
+              child: Text(
+                snap.documentID,
+                style: TextStyle(
+                  color:
+                  Theme.of(context).primaryColor,
+                  fontFamily: 'Raleway',
+                ),
+              ),
+              value: '${snap.documentID}',
+            ));
+          }
+          return DropdownButton(
+            items: levelItems,
+            onChanged: (levelValue) {
+              setState(() {
+                selectedLevel = levelValue;
+              });
+            },
+            value: selectedLevel,
+            isExpanded: false,
+            hint: new Text(
+              'Choose your level',
+              style: TextStyle(
+                  color: Colors.blueGrey,
+                  fontFamily: 'Raleway'),
+            ),
+          );
+        }
+      },
+    );
   }
 
   updateProfileData() {
@@ -171,149 +309,12 @@ class _EditProfileState extends State<EditProfile> {
                             children: <Widget>[
                               buildDisplayNameField(),
                               buildMatricNumber(),
-                              StreamBuilder<QuerySnapshot>(
-                                stream: Firestore.instance
-                                    .collection('departments')
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Text('Loading...');
-                                  } else {
-                                    List<DropdownMenuItem> departmentItems = [];
-                                    for (int i = 0;
-                                        i < snapshot.data.documents.length;
-                                        i++) {
-                                      DocumentSnapshot snap =
-                                          snapshot.data.documents[i];
-                                      departmentItems.add(DropdownMenuItem(
-                                        child: Text(
-                                          snap.documentID,
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontFamily: 'Raleway',
-                                          ),
-                                        ),
-                                        value: '${snap.documentID}',
-                                      ));
-                                    }
-                                    return DropdownButton(
-                                      items: departmentItems,
-                                      onChanged: (departmentValue) {
-                                        setState(() {
-                                          selectedDepartment = departmentValue;
-                                        });
-                                      },
-                                      value: selectedDepartment,
-                                      isExpanded: false,
-                                      hint: new Text(
-                                        'Choose your department',
-                                        style: TextStyle(
-                                            color: Colors.blueGrey,
-                                            fontFamily: 'Raleway'),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
                               SizedBox(height: 20.0),
-                              StreamBuilder<QuerySnapshot>(
-                                stream: Firestore.instance
-                                    .collection('departments')
-                                    .document(selectedDepartment)
-                                    .collection('programmes')
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Text('Loading...');
-                                  } else {
-                                    List<DropdownMenuItem> programItems = [];
-                                    for (int i = 0;
-                                        i < snapshot.data.documents.length;
-                                        i++) {
-                                      DocumentSnapshot snap =
-                                          snapshot.data.documents[i];
-                                      programItems.add(DropdownMenuItem(
-                                        child: Text(
-                                          snap.documentID,
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontFamily: 'Raleway',
-                                          ),
-                                        ),
-                                        value: '${snap.documentID}',
-                                      ));
-                                    }
-                                    return DropdownButton(
-                                      items: programItems,
-                                      onChanged: (programValue) {
-                                        setState(() {
-                                          selectedProgram = programValue;
-                                        });
-                                      },
-                                      value: selectedProgram,
-                                      isExpanded: false,
-                                      hint: new Text(
-                                        'Choose your program',
-                                        style: TextStyle(
-                                            color: Colors.blueGrey,
-                                            fontFamily: 'Raleway'),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
+                              buildDepartmentDropdown(),
                               SizedBox(height: 20.0),
-                              StreamBuilder<QuerySnapshot>(
-                                stream: Firestore.instance
-                                    .collection('departments')
-                                    .document(selectedDepartment)
-                                    .collection('programmes')
-                                    .document(selectedProgram)
-                                    .collection('levels')
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Text('Loading...');
-                                  } else {
-                                    List<DropdownMenuItem> levelItems = [];
-                                    for (int i = 0;
-                                    i < snapshot.data.documents.length;
-                                    i++) {
-                                      DocumentSnapshot snap =
-                                      snapshot.data.documents[i];
-                                      levelItems.add(DropdownMenuItem(
-                                        child: Text(
-                                          snap.documentID,
-                                          style: TextStyle(
-                                            color:
-                                            Theme.of(context).primaryColor,
-                                            fontFamily: 'Raleway',
-                                          ),
-                                        ),
-                                        value: '${snap.documentID}',
-                                      ));
-                                    }
-                                    return DropdownButton(
-                                      items: levelItems,
-                                      onChanged: (levelValue) {
-                                        setState(() {
-                                          selectedLevel = levelValue;
-                                        });
-                                      },
-                                      value: selectedLevel,
-                                      isExpanded: false,
-                                      hint: new Text(
-                                        'Choose your level',
-                                        style: TextStyle(
-                                            color: Colors.blueGrey,
-                                            fontFamily: 'Raleway'),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
+                              buildProgramDropdown(),
+                              SizedBox(height: 20.0),
+                              buildLevelDropdown(),
                             ],
                           ),
                         ),
@@ -330,20 +331,6 @@ class _EditProfileState extends State<EditProfile> {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: FlatButton.icon(
-                              onPressed: logout,
-                              icon: Icon(
-                                Icons.cancel,
-                                color: Colors.red,
-                              ),
-                              label: Text(
-                                'Logout',
-                                style: TextStyle(
-                                    color: Colors.red, fontFamily: 'Raleway'),
-                              )),
-                        )
                       ],
                     ),
                   ),

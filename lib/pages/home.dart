@@ -8,6 +8,7 @@ import 'package:tutr_connect/pages/activity_feed.dart';
 import 'package:tutr_connect/pages/create_account.dart';
 import 'package:tutr_connect/pages/profile.dart';
 import 'package:tutr_connect/pages/search.dart';
+import 'package:tutr_connect/pages/timeline.dart';
 import 'package:tutr_connect/pages/upload.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -16,6 +17,7 @@ final usersRef = Firestore.instance.collection('users');
 final postsRef = Firestore.instance.collection('posts');
 final messagesRef = Firestore.instance.collection('messages');
 final commentsRef = Firestore.instance.collection('comments');
+final timelineRef = Firestore.instance.collection('timeline');
 final activityFeedRef = Firestore.instance.collection('feed');
 final messageFeedRef = Firestore.instance.collection('recent');
 final followersRef = Firestore.instance.collection('followers');
@@ -55,10 +57,10 @@ class _HomeState extends State<Home> {
     });
   }
 
-  handleSignIn(GoogleSignInAccount account) {
+  handleSignIn(GoogleSignInAccount account) async{
     //if statement to set authorised if user data is available
     if (account != null) {
-      createUserInFirestore();
+      await createUserInFirestore();
       setState(() {
         isAuth = true;
       });
@@ -87,14 +89,20 @@ class _HomeState extends State<Home> {
         'photoUrl': user.photoUrl,
         'email': user.email,
         'display name': user.displayName,
-        //TODO change to rating
-        'rating': '',
         'matricNumber': '',
         'level': '',
         'department': '',
         'program': '',
         'timestamp': timestamp,
       });
+
+      //make new user their own follower to add their posts to their timeline
+      await followersRef
+        .document(user.id)
+        .collection('userFollowers')
+        .document(user.id)
+        .setData({});
+
       doc = await usersRef.document(user.id).get();
     }
 
@@ -132,12 +140,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: PageView(
         children: <Widget>[
-          //TODO figure out which of these I don't need and what I need to add
-//          Timeline(),
-          RaisedButton(
-            child: Text('Logout '),
-            onPressed: logout,
-          ),
+          Timeline(currentUser: currentUser),
           ActivityFeed(),
           Upload(currentUser: currentUser),
           Search(),
@@ -150,7 +153,7 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: CupertinoTabBar(
         currentIndex: pageIndex,
         onTap: onTap,
-        activeColor: Color(0xFF00C3C3),
+        activeColor: Color(0xFF73DAFF),
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.whatshot),
@@ -173,10 +176,6 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
-//   return RaisedButton(
-//        child: Text('Logout '),
-//      onPressed: logout,
-//    );
   }
 
   Scaffold buildUnAuthScreen() {

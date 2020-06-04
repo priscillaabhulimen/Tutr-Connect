@@ -21,7 +21,7 @@ class Upload extends StatefulWidget {
   _UploadState createState() => _UploadState();
 }
 
-class _UploadState extends State<Upload> {
+class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin<Upload> {
   TextEditingController captionController = TextEditingController();
   File file;
   bool isUploading = false;
@@ -99,11 +99,11 @@ class _UploadState extends State<Upload> {
                   'Upload image',
                   style: TextStyle(
                       fontFamily: 'Raleway',
-                      color: Colors.white,
+                      color: Color(0xFF73DAFF),
                       fontSize: 20.0),
                 ),
               ),
-              color: Color(0xFF00C3C3),
+              color: Colors.white,
               onPressed: () => selectImage(context),
             ),
           )
@@ -150,6 +150,17 @@ class _UploadState extends State<Upload> {
         'timestamp': timestamp,
         'likes': {},
       });
+
+     postsRef.document(widget.currentUser.id).snapshots().first.then((doc){
+      //check if the created document has a field
+      //if none, create one
+      print("Firestore first: $doc.data");
+      if(doc.data == null){
+        postsRef
+        .document(widget.currentUser.id)
+        .setData({"exists": ""});
+      }
+    });
   }
 
   handleSubmit() async {
@@ -239,8 +250,12 @@ class _UploadState extends State<Upload> {
     );
   }
 
+ bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return file == null ? buildSplashScreen() : buildUploadForm();
   }
 }

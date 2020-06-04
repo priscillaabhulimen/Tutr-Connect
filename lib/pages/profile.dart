@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tutr_connect/models/user.dart';
 import 'package:tutr_connect/pages/chat/chat_screen.dart';
-import 'package:tutr_connect/pages/chat/recent_chat.dart';
 import 'package:tutr_connect/pages/edit_profile.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/widgets/header.dart';
@@ -278,35 +277,7 @@ class _ProfileState extends State<Profile> {
                         ),
                         buildProfileButton(),
                         isProfileOwner
-                            ? FlatButton(
-                                onPressed: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => RecentChats(
-                                              thisUserId: currentUserId,
-                                              peerId: user.id,
-                                            ))),
-                                child: Container(
-                                  width: 250.0,
-                                  height: 27.0,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Open recent chats',
-                                    style: TextStyle(
-                                        color: isFollowing
-                                            ? Colors.black
-                                            : Colors.white,
-                                        fontFamily: 'Raleway',
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).accentColor,
-                                      border: Border.all(
-                                        color: Theme.of(context).accentColor,
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0)),
-                                ),
-                              )
+                            ? Text(" ")
                             : FlatButton(
                                 onPressed: () => Navigator.push(
                                     context,

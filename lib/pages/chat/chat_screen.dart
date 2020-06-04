@@ -28,6 +28,7 @@ class _ChatsState extends State<Chats> {
   final String peerId;
   final String peerAvatar;
   final String messageOwnerId;
+  bool inRecents = false;
   String messageId = Uuid().v4();
   Future<QuerySnapshot> searchResultsFuture;
   TextEditingController messageController = TextEditingController();
@@ -72,7 +73,7 @@ class _ChatsState extends State<Chats> {
         });
   }
 
-  addMessageSent() {
+  addMessageSent() async {
     // add sent message to peer document as received; sent by current
     messagesRef
         .document(currentUser.id)
@@ -105,12 +106,10 @@ class _ChatsState extends State<Chats> {
       'receiverId': peerId,
       'messageType': 'receiving'
     });
-
-    addMessageToRecentChats();
     messageController.clear();
   }
 
-  addMessageReceived() {
+  addMessageReceived() async {
     // add received message to current user document as received; received by current
     messagesRef
         .document(peerId)
@@ -143,12 +142,8 @@ class _ChatsState extends State<Chats> {
       'receiverId': currentUser.id,
       'messageType': 'receiving'
     });
-
-    addMessageToRecentChats();
     messageController.clear();
   }
-
-  addMessageToRecentChats(){}
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +209,6 @@ class Message extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool hasAvatar = senderAvatar != null;
     return Column(
       crossAxisAlignment: messageType == 'sending'
           ? CrossAxisAlignment.end
