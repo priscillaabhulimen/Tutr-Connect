@@ -12,8 +12,10 @@ class CreateAccount extends StatefulWidget {
 class _CreateAccountState extends State<CreateAccount> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
+  var selectedDepartment, selectedProgram, selectedLevel, selectedSemester;
   final usersRef = Firestore.instance.collection('users');
   String username;
+  String currentSemester;
 
   submit() {
     final form = _formKey.currentState;
@@ -31,6 +33,8 @@ class _CreateAccountState extends State<CreateAccount> {
       });
     }
   }
+
+  
 
   @override
   Widget build(BuildContext parentContext) {

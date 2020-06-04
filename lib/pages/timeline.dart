@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tutr_connect/models/user.dart';
 import 'package:tutr_connect/pages/chat/recent_chat.dart';
-import 'package:tutr_connect/pages/courses.dart';
+import 'package:tutr_connect/pages/course_model.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/pages/search.dart';
 import 'package:tutr_connect/widgets/header.dart';
@@ -153,7 +153,7 @@ class _TimelineState extends State<Timeline> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Courses()
+                      builder: (context) => Course()
                     )
                   );
                 },

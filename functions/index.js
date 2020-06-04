@@ -8,6 +8,7 @@ admin.initializeApp();
 // exports.helloWorld = functions.https.onRequest((request, response) => {
 //  response.send("Hello from Firebase!");
 // });
+
 exports.onCreateFollower = functions.firestore
   .document("/followers/{userId}/userFollowers/{followerId}")
   .onCreate(async (snapshot, context) => {
@@ -155,5 +156,3 @@ exports.onDeletePost = functions.firestore
         });
     });
 });
-
-//get courses from department collection and put in courses collection

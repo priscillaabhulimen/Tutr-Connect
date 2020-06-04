@@ -11,6 +11,7 @@ class User {
   final String department;
   final String program;
   final String level;
+  final String currentSemester;
 
   User({
     this.id,
@@ -23,6 +24,7 @@ class User {
     this.department,
     this.program,
     this.level,
+    this.currentSemester
 });
 
   factory User.fromDocument(DocumentSnapshot doc){
@@ -36,7 +38,8 @@ class User {
         matriculationNumber: doc['matricNumber'],
         department: doc['department'],
         program: doc['program'],
-        level: doc['level']
+        level: doc['level'],
+        currentSemester: doc['currentSemester']
       );
   }
 

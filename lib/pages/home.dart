@@ -22,6 +22,8 @@ final activityFeedRef = Firestore.instance.collection('feed');
 final messageFeedRef = Firestore.instance.collection('recent');
 final followersRef = Firestore.instance.collection('followers');
 final followingRef = Firestore.instance.collection('following');
+final departmentRef = Firestore.instance.collection('department');
+final coursesRef = Firestore.instance.collection('courses');
 DateTime timestamp = DateTime.now();
 User currentUser;
 //enables a number of methods allow users to login and logout
@@ -90,6 +92,7 @@ class _HomeState extends State<Home> {
         'email': user.email,
         'display name': user.displayName,
         'matricNumber': '',
+        'currentSemester': '',
         'level': '',
         'department': '',
         'program': '',

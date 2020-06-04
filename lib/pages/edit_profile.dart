@@ -17,7 +17,7 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  var selectedDepartment, selectedProgram, selectedLevel;
+  var selectedDepartment, selectedProgram, selectedLevel, selectedSemester;
   TextEditingController displayNameController = TextEditingController();
   TextEditingController matricNumberController = TextEditingController();
   bool isLoading = false;
@@ -239,6 +239,60 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
+  buildSemesterDropdown() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('departments')
+          .document(selectedDepartment)
+          .collection('programmes')
+          .document(selectedProgram)
+          .collection('levels')
+          .document(selectedLevel)
+          .collection('semester')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Text('Loading...');
+        } else {
+          List<DropdownMenuItem> semesterItems = [];
+          for (int i = 0;
+              i < snapshot.data.documents.length;
+              i++) {
+            DocumentSnapshot snap =
+                snapshot.data.documents[i];
+            semesterItems.add(DropdownMenuItem(
+              child: Text(
+                snap.documentID,
+                style: TextStyle(
+                  color:
+                      Theme.of(context).primaryColor,
+                  fontFamily: 'Raleway',
+                ),
+              ),
+              value: '${snap.documentID}',
+            ));
+          }
+          return DropdownButton(
+            items: semesterItems,
+            onChanged: (semesterValue) {
+              setState(() {
+                selectedSemester = semesterValue;
+              });
+            },
+            value: selectedSemester,
+            isExpanded: false,
+            hint: new Text(
+              'Choose your department',
+              style: TextStyle(
+                  color: Colors.blueGrey,
+                  fontFamily: 'Raleway'),
+            ),
+          );
+        }
+      },
+    );
+  }
+
   updateProfileData() {
     setState(() {
       displayNameController.text.trim().length < 3 ||
@@ -315,6 +369,8 @@ class _EditProfileState extends State<EditProfile> {
                               buildProgramDropdown(),
                               SizedBox(height: 20.0),
                               buildLevelDropdown(),
+                              SizedBox(height: 20.0),
+                              buildSemesterDropdown(),
                             ],
                           ),
                         ),
