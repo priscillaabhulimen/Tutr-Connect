@@ -309,6 +309,9 @@ class _EditProfileState extends State<EditProfile> {
         'level': selectedLevel,
         'currentSemester':selectedSemester,
         'matricNumber': matricNumberController.text,
+      }).then((value) async{
+        DocumentSnapshot doc = await usersRef.document(widget.currentUserId).get();
+        currentUser = User.fromDocument(doc);
       });
       SnackBar snackbar = SnackBar(content: Text('Profile Updated.'));
       _scaffoldKey.currentState.showSnackBar(snackbar);

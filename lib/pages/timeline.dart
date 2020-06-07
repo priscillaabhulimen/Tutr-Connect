@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tutr_connect/models/user.dart';
-import 'package:tutr_connect/pages/chat/recent_chat.dart';
 import 'package:tutr_connect/pages/course_model.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/pages/search.dart';
@@ -202,8 +201,3 @@ class _TimelineState extends State<Timeline> {
   }
 }
 
-showRecentChats(BuildContext context, {String currentUserId}) {
-  Navigator.push(context, MaterialPageRoute(builder: (context) {
-    return RecentChats();
-  }));
-}

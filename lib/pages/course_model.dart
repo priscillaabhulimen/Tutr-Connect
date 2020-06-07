@@ -20,7 +20,7 @@ class _CoursesState extends State<Courses> {
   .document(currentUser.currentSemester)
   .collection('Courses');
 
-  getCourses() {
+  getCourse() {
     return StreamBuilder<QuerySnapshot>(
       stream: courseRef.snapshots(),
       builder: (context, snapshot){
@@ -28,7 +28,7 @@ class _CoursesState extends State<Courses> {
           return circularProgress();
         } else{
           List<Container> coursesL = [];
-          for (int i = 0; i < snapshot.data.documents.length; i++){
+          for (int i = 0; i < snapshot.data.documents.length; i++) {
             DocumentSnapshot snap = snapshot.data.documents[i];
             coursesL.add(
               Container(
@@ -110,7 +110,7 @@ class _CoursesState extends State<Courses> {
           'Courses'
         ),
       ), 
-      body: getCourses(),
+      body: getCourse(),
     );
   }
 }
