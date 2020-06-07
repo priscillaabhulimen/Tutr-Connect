@@ -260,8 +260,8 @@ class _EditProfileState extends State<EditProfile> {
               i++) {
             DocumentSnapshot snap =
                 snapshot.data.documents[i];
-            semesterItems.add(DropdownMenuItem(
-              child: Text(
+                semesterItems.add(DropdownMenuItem(
+                child: Text(
                 snap.documentID,
                 style: TextStyle(
                   color:
