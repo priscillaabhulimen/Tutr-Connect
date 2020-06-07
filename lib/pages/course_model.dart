@@ -34,7 +34,8 @@ class _CoursesState extends State<Courses> {
               Container(
                 margin: EdgeInsets.only(top:10.0, left: 8.0, right: 8.0),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).accentColor.withOpacity(0.3),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0)
                 ),
                 height: 150.0,
                 child: Column(
@@ -46,7 +47,7 @@ class _CoursesState extends State<Courses> {
                         snap.documentID,
                         style: TextStyle(
                           fontFamily: 'Raleway',
-                          fontSize: 70.0,
+                          fontSize: 25.0,
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).primaryColor
                         ),
@@ -54,22 +55,21 @@ class _CoursesState extends State<Courses> {
                     ),
                     SizedBox(height: 20.0,),
                     Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          GestureDetector(
-                            onTap: (){},
+                        child:  GestureDetector(
+                            onTap: (){
+                              print('Registered!');
+                            },
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Theme.of(context).primaryColor,
                                 borderRadius: BorderRadius.circular(10.0)
                               ),
                               height: 40.0,
-                              width: 150.0,
-                              
+                              width: 120.0,
+
                               child: Center(
                                 child: Text(
-                                  'Register as tutor',
+                                  'Register',
                                   style: TextStyle(
                                     color: Colors.white
                                   ),
@@ -77,28 +77,6 @@ class _CoursesState extends State<Courses> {
                               )
                                 ),
                           ),
-                          SizedBox(width: 10.0,),
-                          GestureDetector(
-                            onTap: (){},
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                borderRadius: BorderRadius.circular(10.0)
-                              ),
-                              height: 40.0,
-                              width: 150.0,
-                              
-                              child: Center(
-                                child: Text(
-                                  'Register as student',
-                                  style: TextStyle(
-                                    color: Colors.white
-                                  ),
-                                  ),
-                              )),
-                          ),
-                        ],
-                      ),
                     )
                   ]
                 )
@@ -108,8 +86,16 @@ class _CoursesState extends State<Courses> {
               'id': snap.documentID,
             });
           }
-          return ListView(
-            children: coursesL,
+          return Container(
+            color: Colors.grey.withOpacity(0.6),
+            child: GridView(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 2.0,
+                  mainAxisSpacing: 2.0,
+                ),
+              children: coursesL,
+            ),
           );
         }
       },
