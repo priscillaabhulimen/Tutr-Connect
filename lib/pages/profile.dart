@@ -277,7 +277,7 @@ class _ProfileState extends State<Profile> {
                         ),
                         buildProfileButton(),
                         isProfileOwner
-                            ? Text(" ")
+                            ? SizedBox(height: 10.0)
                             : FlatButton(
                                 onPressed: () => Navigator.push(
                                     context,
@@ -334,13 +334,7 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(top: 2.0),
-                child: Text(
-                  user.rating,
-                ),
-              ),
+              
             ],
           ),
         );

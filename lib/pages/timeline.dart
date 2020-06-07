@@ -153,7 +153,7 @@ class _TimelineState extends State<Timeline> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Course()
+                      builder: (context) => Courses()
                     )
                   );
                 },

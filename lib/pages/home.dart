@@ -22,7 +22,7 @@ final activityFeedRef = Firestore.instance.collection('feed');
 final messageFeedRef = Firestore.instance.collection('recent');
 final followersRef = Firestore.instance.collection('followers');
 final followingRef = Firestore.instance.collection('following');
-final departmentRef = Firestore.instance.collection('department');
+final departmentRef = Firestore.instance.collection('departments');
 final coursesRef = Firestore.instance.collection('courses');
 DateTime timestamp = DateTime.now();
 User currentUser;
@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
     }, onError: (err) {
       print('Error signing in: $err');
     });
-    //Re-authenticate user when app is opened
+    //Re-authenticate user when app is openedst
     googleSignIn.signInSilently(suppressErrors: false)
         //to resolve what comes back from executing signInSilently
         .then((account) {

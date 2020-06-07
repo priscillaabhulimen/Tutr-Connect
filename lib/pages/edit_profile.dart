@@ -282,7 +282,7 @@ class _EditProfileState extends State<EditProfile> {
             value: selectedSemester,
             isExpanded: false,
             hint: new Text(
-              'Choose your department',
+              'Choose your current semester',
               style: TextStyle(
                   color: Colors.blueGrey,
                   fontFamily: 'Raleway'),
@@ -307,6 +307,7 @@ class _EditProfileState extends State<EditProfile> {
         'department': selectedDepartment,
         'program': selectedProgram,
         'level': selectedLevel,
+        'currentSemester':selectedSemester,
         'matricNumber': matricNumberController.text,
       });
       SnackBar snackbar = SnackBar(content: Text('Profile Updated.'));
