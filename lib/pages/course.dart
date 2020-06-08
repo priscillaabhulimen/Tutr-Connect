@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tutr_connect/models/course.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/widgets/progress.dart';
 

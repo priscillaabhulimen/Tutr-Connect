@@ -293,7 +293,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  updateProfileData() {
+  updateProfileData() async{
     setState(() {
       displayNameController.text.trim().length < 3 ||
               displayNameController.text.isEmpty
@@ -302,7 +302,7 @@ class _EditProfileState extends State<EditProfile> {
     });
 
     if (_displayNameValid) {
-      usersRef.document(widget.currentUserId).updateData({
+      await usersRef.document(widget.currentUserId).updateData({
         'display name': displayNameController.text,
         'department': selectedDepartment,
         'program': selectedProgram,
