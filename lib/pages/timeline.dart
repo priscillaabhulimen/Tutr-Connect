@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tutr_connect/models/user.dart';
-import 'package:tutr_connect/pages/course_model.dart';
+import 'package:tutr_connect/pages/course.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/pages/search.dart';
 import 'package:tutr_connect/widgets/header.dart';
