@@ -64,17 +64,6 @@ class _CourseState extends State<Course> {
           List<Container> coursesL = [];
           for (int i = 0; i < snapshot.data.documents.length; i++) {
             DocumentSnapshot snap = snapshot.data.documents[i];
-            final studentsRef = departmentRef
-            .document(currentUser.department)
-            .collection('programmes')
-            .document(currentUser.program)
-            .collection('levels')
-            .document(currentUser.level)
-            .collection('semester')
-            .document(currentUser.currentSemester)
-            .collection('Courses')
-            .document(snap.documentID)
-            .collection('students');
             coursesL.add(
               Container(
                 margin: EdgeInsets.only(top:10.0, left: 8.0, right: 8.0),
