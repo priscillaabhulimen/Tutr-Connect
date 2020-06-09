@@ -51,17 +51,17 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin<Uplo
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Create Post'),
+            title: Text('Get Image from...'),
             children: <Widget>[
               SimpleDialogOption(
-                child: Text('Photo from Camera'),
+                child: Text('Camera'),
                 onPressed: handleTakePhoto,
               ),
               Divider(
                 height: 4.0,
               ),
               SimpleDialogOption(
-                child: Text('Image from Storage'),
+                child: Text('Storage'),
                 onPressed: handleChooseFromGallery,
               ),
               Divider(
