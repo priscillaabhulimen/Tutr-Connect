@@ -6,44 +6,19 @@ import 'package:tutr_connect/pages/tutor.dart';
 import 'package:tutr_connect/widgets/progress.dart';
 
 class Course extends StatefulWidget {
-  final String id;
-  final dynamic tutors;
-  final dynamic students;
-
-  Course({
-    this.id,
-    this.tutors,
-    this.students
-  });
-
-  factory Course.fromDocument(DocumentSnapshot doc) {
-    return Course(
-      id: doc['id'],
-      tutors: doc['tutors'],
-      students: doc['students'],
-    );
-  }
   @override
-  _CourseState createState() => _CourseState(
-    id: this.id,
-    tutors: this.tutors,
-    students: this.students
-  );
+  _CourseState createState() => _CourseState();
 }
 
 class _CourseState extends State<Course> {
-  final String currentUserId = currentUser?.id;
-  final String id;
-  bool isStudent;
-  Map tutors;
-  Map students;
+  final String currentUserId = currentUser?.id; 
+  String courseId;
+  Registered regUser;
+  bool registered = true;
+  bool isStudent = false;
+  bool isTutor = false;
 
-  _CourseState({
-    this.id,
-    this.tutors,
-    this.students
-  });
-
+  
   final courseRef = departmentRef
   .document(currentUser.department)
   .collection('programmes')
@@ -54,16 +29,38 @@ class _CourseState extends State<Course> {
   .document(currentUser.currentSemester)
   .collection('Courses');
 
+
+  isRegistered(courseId) async{
+     DocumentSnapshot registeredUser = await courseRef
+     .document(courseId)
+     .collection('Registered')
+     .document(currentUser.id)
+     .get();
+     regUser = Registered.fromDocument(registeredUser);
+            if (registeredUser.exists){
+              registered = true;
+              
+              print(regUser.isStudent);
+              isTutor = regUser.isTutor;
+              isStudent = regUser.isStudent;
+
+            } else {
+              registered = false;
+            }
+  }
+  
+
   getCourse() {
     return StreamBuilder<QuerySnapshot>(
       stream: courseRef.snapshots(),
-      builder: (context, snapshot){
+      builder: (context, snapshot) {
         if (!snapshot.hasData){
           return circularProgress();
         } else{
           List<Container> coursesL = [];
           for (int i = 0; i < snapshot.data.documents.length; i++) {
             DocumentSnapshot snap = snapshot.data.documents[i];
+            isRegistered(snap.documentID);
             coursesL.add(
               Container(
                 margin: EdgeInsets.only(top:10.0, left: 8.0, right: 8.0),
@@ -91,7 +88,11 @@ class _CourseState extends State<Course> {
                     Center(
                         child:  GestureDetector(
                             onTap: (){
-                              showDialog(
+                              registered ? Navigator.push(context, 
+                              MaterialPageRoute(
+                                builder: (context) => isStudent ? Student() : Tutor()
+                                ))
+                              : showDialog(
                                 context: this.context,
                                 builder: (context){
                                   return SimpleDialog(
@@ -102,11 +103,13 @@ class _CourseState extends State<Course> {
                                         onPressed: () {
                                           courseRef
                                           .document(snap.documentID)
-                                          .collection('students')
+                                          .collection('Registered')
                                           .document(currentUserId)
                                           .setData({
                                             'isStudent' : true,
+                                            'isTutor': false
                                           });
+                                          Navigator.pop(context);
                                           Navigator.push(context, 
                                           MaterialPageRoute(
                                             builder: (context) => Student()
@@ -122,11 +125,13 @@ class _CourseState extends State<Course> {
                                         onPressed: (){
                                           courseRef
                                           .document(snap.documentID)
-                                          .collection('tutors')
+                                          .collection('Registered')
                                           .document(currentUserId)
                                           .setData({
+                                            'isStudent': false,
                                             'isTutor' : true,
                                           });
+                                          Navigator.pop(context);
                                           Navigator.push(context, 
                                           MaterialPageRoute(
                                             builder: (context) => Tutor()
@@ -156,7 +161,7 @@ class _CourseState extends State<Course> {
 
                               child: Center(
                                 child: Text(
-                                  'Register',
+                                  'Access',
                                   style: TextStyle(
                                     color: Colors.white
                                   ),
@@ -191,7 +196,6 @@ class _CourseState extends State<Course> {
 
   @override
   Widget build(BuildContext context) {
-    // isStudent = (widget.students[currentUserId] == true);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -200,5 +204,22 @@ class _CourseState extends State<Course> {
       ), 
       body: getCourse(),
     );
+  }
+}
+
+class Registered {
+  final bool isStudent;
+  final bool isTutor;
+
+  Registered({
+    this.isStudent,
+    this.isTutor,
+  });
+
+  factory Registered.fromDocument(DocumentSnapshot doc){
+    return Registered(
+      isStudent: doc['isStudent'],
+      isTutor: doc['isTutor'],
+      );
   }
 }

@@ -12,6 +12,7 @@ class User {
   final String program;
   final String level;
   final String currentSemester;
+  final bool isRegistered;
 
   User({
     this.id,
@@ -24,7 +25,8 @@ class User {
     this.department,
     this.program,
     this.level,
-    this.currentSemester
+    this.currentSemester,
+    this.isRegistered
 });
 
   factory User.fromDocument(DocumentSnapshot doc){
@@ -39,7 +41,8 @@ class User {
         department: doc['department'],
         program: doc['program'],
         level: doc['level'],
-        currentSemester: doc['currentSemester']
+        currentSemester: doc['currentSemester'],
+        isRegistered: doc['isRegistered']
       );
   }
 

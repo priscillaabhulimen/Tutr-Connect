@@ -93,6 +93,7 @@ class _HomeState extends State<Home> {
         'display name': user.displayName,
         'matricNumber': '',
         'currentSemester': '',
+        'isRegistered': '',
         'level': '',
         'department': '',
         'program': '',
