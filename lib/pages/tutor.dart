@@ -12,7 +12,16 @@ class _TutorState extends State<Tutor> {
       appBar: AppBar(
         title: Text('View students'),
       ),
-      body: Container(color: Colors.black,),
+      body: Column(children: <Widget>[
+        Expanded(
+                  child: Container(
+          color: Colors.black,
+          ),
+        ),
+        GestureDetector(child: Container(
+          color: Colors.grey,
+          child: Text('Unenroll'),),)
+      ],)
     );
   }
 }

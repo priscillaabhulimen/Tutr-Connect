@@ -23,7 +23,15 @@ final messageFeedRef = Firestore.instance.collection('recent');
 final followersRef = Firestore.instance.collection('followers');
 final followingRef = Firestore.instance.collection('following');
 final departmentRef = Firestore.instance.collection('departments');
-final coursesRef = Firestore.instance.collection('courses');
+final courseRef = departmentRef
+  .document(currentUser.department)
+  .collection('programmes')
+  .document(currentUser.program)
+  .collection('levels')
+  .document(currentUser.level)
+  .collection('semester')
+  .document(currentUser.currentSemester)
+  .collection('Courses');
 DateTime timestamp = DateTime.now();
 User currentUser;
 //enables a number of methods allow users to login and logout
