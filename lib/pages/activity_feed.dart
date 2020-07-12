@@ -2,9 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:tutr_connect/models/user.dart';
+import 'package:tutr_connect/pages/chat/chat_screen.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/pages/post_screen.dart';
 import 'package:tutr_connect/pages/profile.dart';
+import 'package:tutr_connect/pages/search.dart';
+import 'package:tutr_connect/pages/student.dart';
 import 'package:tutr_connect/widgets/header.dart';
 import 'package:tutr_connect/widgets/progress.dart';
 
@@ -55,7 +59,7 @@ String activityItemText;
 class ActivityFeedItem extends StatelessWidget {
   final String username;
   final String userId;
-  final String type; // 'like', 'follow', 'comment'
+  final String type; // 'like', 'follow', 'comment', 'request', 'accepted'
   final String mediaUrl;
   final String postId;
   final String userProfileImg;
@@ -95,7 +99,7 @@ class ActivityFeedItem extends StatelessWidget {
                 )));
   }
 
-  configureMediaPreview(context) {
+  configureMediaPreview(context) async{
     if (type == 'like' || type == 'comment') {
       mediaPreview = GestureDetector(
         onTap: () => showPost(context),
@@ -114,7 +118,50 @@ class ActivityFeedItem extends StatelessWidget {
           ),
         ),
       );
-    } else {
+    } else if(type == 'request'){
+      mediaPreview = GestureDetector(
+                      onTap: () {
+                        courseRef
+                        .document(postId)
+                        .collection('Tutors')
+                        .document(currentUser.id)
+                        .collection('Students')
+                        .document(userId)
+                        .setData({
+                          'id': userId,
+                          'username': username,
+                          'photoUrl': userProfileImg
+                        });
+                        activityFeedRef.document(userId).collection('feedItems').add({
+                          'type': 'accepted',
+                          'studentId': userId,
+                          'postId': postId,
+                          'username': currentUser.username,
+                          'userId': currentUser.id,
+                          'userProfileImg': currentUser.photoUrl,
+                          'timestamp': DateTime.now()
+                        });
+                        showProfile(context, profileId: userId);
+                      },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(10.0)
+                          ),
+                          height: 40.0,
+                          width: 60.0,
+                          child: Center(
+                            child: Text(
+                              'Accept',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
+                                ),
+                            ),
+                          ),
+                      ),
+                    );
+    } else{
       mediaPreview = Text('');
     }
 
@@ -124,6 +171,10 @@ class ActivityFeedItem extends StatelessWidget {
       activityItemText = 'is following you';
     } else if (type == 'comment') {
       activityItemText = 'replied: $commentData';
+    } else if (type == 'request'){
+      activityItemText = 'needs a tutorial in $postId';
+    } else if (type == 'accepted'){
+      activityItemText = 'accepted your $postId request';
     } else {
       activityItemText = "Error: Unknown type'$type'";
     }

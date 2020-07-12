@@ -111,6 +111,24 @@ class _CreateAccountState extends State<CreateAccount> {
                       ),
                     ),
                   ),
+                ),
+                SizedBox(height: 10.0),
+                Container(
+                  height: 150.0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Center(
+                      child: Text(
+                        'Please proceed to the profile page to edit your profile. You are required to update your profile with your matriculation number and your department, program, level and the current ongoing semester.',
+                        style: TextStyle(
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Raleway',
+                          color: Colors.black.withOpacity(0.4)
+                        ),
+                      ),
+                    ),
+                  ),
                 )
               ],
             ),

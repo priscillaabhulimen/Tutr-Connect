@@ -11,8 +11,7 @@ class Course extends StatefulWidget {
 }
 
 class _CourseState extends State<Course> {
-  final String currentUserId = currentUser?.id; 
-  String courseId;
+  final String currentUserId = currentUser?.id;
   Registered regUser;
   bool registered = false;
   bool isStudent = false;
@@ -29,8 +28,6 @@ class _CourseState extends State<Course> {
         regUser = Registered.fromDocument(registeredUser);
         if (registeredUser.exists){
         registered = true;
-        isTutor = regUser.isTutor;
-        isStudent = regUser.isStudent;
         }
         else {
           registered = false;
@@ -40,6 +37,25 @@ class _CourseState extends State<Course> {
         registered = false;
       }
     return registered;
+  }
+
+  Future <bool> getStudStatus(courseId) async{
+    DocumentSnapshot registeredUser = await courseRef
+     .document(courseId)
+     .collection('Registered')
+     .document(currentUser.id)
+     .get();
+     if (registeredUser.exists){
+       regUser = Registered.fromDocument(registeredUser);
+       if(regUser.isStudent){
+         isStudent = true;
+       } else {
+         isStudent = false;
+       }
+     } else {
+       isStudent = false;
+     }
+     return isStudent;
   }
   
 
@@ -54,7 +70,7 @@ class _CourseState extends State<Course> {
           for (int i = 0; i < snapshot.data.documents.length; i++) {
             DocumentSnapshot snap = snapshot.data.documents[i];
              coursesL.add(
-              CourseViewItem(courseId: snap.documentID, isRegistered: isRegistered(snap.documentID), isStudent: isStudent, isTutor: isTutor)
+              CourseViewItem(courseId: snap.documentID, isRegistered: isRegistered(snap.documentID), isStudent: getStudStatus(snap.documentID))
              );
             courseRef.document(snap.documentID).setData({
               'id': snap.documentID,
@@ -91,8 +107,9 @@ class _CourseState extends State<Course> {
 
 class CourseViewItem extends StatelessWidget {
   Future <bool> isRegistered;
-  bool isStudent = false;
+  Future <bool> isStudent;
   bool isTutor = false;
+  bool studStatus;
   bool regStatus;
    String courseId;
 
@@ -103,10 +120,15 @@ class CourseViewItem extends StatelessWidget {
     this.isTutor
   }){
     getRegStatus();
+    getStudStatus();
   }
 
   getRegStatus() async{
     regStatus = await isRegistered;
+  }
+
+  getStudStatus() async{
+    studStatus = await isStudent;
   }
 
   @override
@@ -137,12 +159,11 @@ class CourseViewItem extends StatelessWidget {
           Center(
               child:  GestureDetector(
                   onTap: (){
-                    print(isStudent);
                     regStatus ? Navigator.push(context, 
                     MaterialPageRoute(
                       builder: (context) => 
-                      isStudent ? Student() : 
-                      Tutor()
+                      studStatus ? Student(courseId: courseId) : 
+                      Tutor(courseId: courseId)
                       ))
                     : 
                     showDialog(
@@ -165,7 +186,7 @@ class CourseViewItem extends StatelessWidget {
                                 Navigator.pop(context);
                                 Navigator.push(context, 
                                 MaterialPageRoute(
-                                  builder: (context) => Student()
+                                  builder: (context) => Student(courseId: courseId)
                                   )
                                 );
                               },
@@ -184,10 +205,21 @@ class CourseViewItem extends StatelessWidget {
                                   'isStudent': false,
                                   'isTutor' : true,
                                 });
+                                courseRef
+                                .document(courseId)
+                                .collection('Tutors')
+                                .document(currentUser.id)
+                                .setData({
+                                  'id': currentUser.id,
+                                  'username': currentUser.username,
+                                  'display name': currentUser.displayName,
+                                  'photoUrl': currentUser.photoUrl
+                                });
+
                                 Navigator.pop(context);
                                 Navigator.push(context, 
                                 MaterialPageRoute(
-                                  builder: (context) => Tutor()
+                                  builder: (context) => Tutor(courseId: courseId)
                                   )
                                 );
                               },
