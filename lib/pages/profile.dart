@@ -511,44 +511,53 @@ class FollowingListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Row(
+      height: 80.0,
+      child: Column(
         children: <Widget>[
-          CircleAvatar(
-                      backgroundColor: Theme.of(context).accentColor,
-                      backgroundImage: CachedNetworkImageProvider(following.photoUrl),
-                    ),
-                    SizedBox(width: 8.0),
-                    Expanded(
-                      child: Text(
-                        following.username,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Raleway',
-                            fontWeight: FontWeight.bold
+          Padding(
+            padding: EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              children: <Widget>[
+                CircleAvatar(
+                            backgroundColor: Theme.of(context).accentColor,
+                            backgroundImage: CachedNetworkImageProvider(following.photoUrl),
                           ),
-                      ),
-                    ),
-                    SizedBox(width: 8.0),
-                    GestureDetector(
-                      onTap: () => handleUnfollow(),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(10.0)
-                          ),
-                          height: 40.0,
-                          width: 100.0,
-                          child: Center(
+                          SizedBox(width: 8.0),
+                          Expanded(
                             child: Text(
-                              'Unfollow',
-                              style: TextStyle(
-                                  color: Colors.white,
+                              following.username,
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  fontFamily: 'Raleway',
                                   fontWeight: FontWeight.bold
                                 ),
                             ),
                           ),
-                      ),
-                    ),
+                          SizedBox(width: 8.0),
+                          GestureDetector(
+                            onTap: () => handleUnfollow(),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  borderRadius: BorderRadius.circular(10.0)
+                                ),
+                                height: 40.0,
+                                width: 100.0,
+                                child: Center(
+                                  child: Text(
+                                    'Unfollow',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold
+                                      ),
+                                  ),
+                                ),
+                            ),
+                          ),
+              ],
+            ),
+          ),
+          Divider(color: Colors.black54,)
         ],
       ),
     );
@@ -655,6 +664,7 @@ class FollowDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
           body: Container(
+            color: Colors.grey.withOpacity(0.4),
             padding: EdgeInsets.all(40.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -667,7 +677,7 @@ class FollowDetail extends StatelessWidget {
                 Text(
                   count.toString(),
                   style: TextStyle(
-                    fontSize: 22.0,
+                    fontSize: 40.0,
                     fontFamily: 'Raleway',
                     fontWeight: FontWeight.bold,
                   ),
@@ -681,7 +691,7 @@ class FollowDetail extends StatelessWidget {
                                     style: TextStyle(
               color: Colors.grey,
               fontFamily: 'Raleway',
-              fontSize: 15.0,
+              fontSize: 35.0,
               fontWeight: FontWeight.w400,
                                     ),
                                   ),
