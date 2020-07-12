@@ -113,7 +113,13 @@ class _HomeState extends State<Home> {
         .document(user.id)
         .collection('userFollowers')
         .document(user.id)
-        .setData({});
+        .setData({
+          'ownerId': currentUser.id,
+      'username': currentUser.username,
+      'id': currentUser.id,
+      'photoUrl': currentUser.photoUrl,
+      'timestamp': DateTime.now(),
+        });
 
       doc = await usersRef.document(user.id).get();
     }

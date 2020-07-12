@@ -61,10 +61,10 @@ class _CreateAccountState extends State<CreateAccount> {
                   child: Container(
                     child: Form(
                         key: _formKey,
+                        autovalidate: true,
                         child: Column(
                           children: <Widget>[
                             TextFormField(
-                              autovalidate: true,
                               validator: (val) {
                                 if (val.trim().length < 3 || val.isEmpty) {
                                   return 'Username too short';

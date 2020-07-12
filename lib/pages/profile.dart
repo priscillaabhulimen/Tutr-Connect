@@ -26,6 +26,8 @@ class _ProfileState extends State<Profile> {
   final String currentUserId = currentUser?.id;
   String postOrientation = 'grid';
   bool isLoading = false;
+  User following;
+  User follower;
   int postCount = 0;
   int followerCount = 0;
   int followingCount = 0;
@@ -89,32 +91,38 @@ class _ProfileState extends State<Profile> {
 
   Column buildCountColumn(String label, int count) {
     return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          count.toString(),
-          style: TextStyle(
-            fontSize: 22.0,
-            fontFamily: 'Raleway',
-            fontWeight: FontWeight.bold,
-          ),
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+      Text(
+        count.toString(),
+        style: TextStyle(
+          fontSize: 22.0,
+          fontFamily: 'Raleway',
+          fontWeight: FontWeight.bold,
         ),
-        Container(
-          margin: EdgeInsets.only(top: 4.0),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey,
-              fontFamily: 'Raleway',
-              fontSize: 15.0,
-              fontWeight: FontWeight.w400,
-            ),
+      ),
+      GestureDetector(
+        onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => FollowDetail(following: following, label: label, count: count)));
+      },
+            child: Container(
+              margin: EdgeInsets.only(top: 4.0),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontFamily: 'Raleway',
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
           ),
-        )
-      ],
-    );
+      )
+        ],
+      );
   }
+
 
   editProfile() {
     Navigator.push(
@@ -172,22 +180,36 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  handleFollowUser() {
+  handleFollowUser() async{
     setState(() {
       isFollowing = true;
     });
     //Make auth user follower of ANOTHER user (update THEIR activity feed followers collection)
+    DocumentSnapshot doc = await usersRef.document(widget.profileId).get();
+    User peer = User.fromDocument(doc);
     followersRef
         .document(widget.profileId)
         .collection('userFollowers')
         .document(currentUserId)
-        .setData({});
+        .setData({
+          'ownerId': peer.id,
+      'username': currentUser.username,
+      'id': currentUserId,
+      'photoUrl': currentUser.photoUrl,
+      'timestamp': DateTime.now(),
+        });
     //Put that user on your following collection (update your following collection)
     followingRef
         .document(currentUserId)
         .collection('userFollowing')
         .document(widget.profileId)
-        .setData({});
+        .setData({
+          'ownerId': currentUser.id,
+      'username': peer.username,
+      'id': peer.id,
+      'photoUrl': peer.photoUrl,
+      'timestamp': DateTime.now(),
+        });
     //add activity feed item to notify about new user following (us)
     activityFeedRef
         .document(widget.profileId)
@@ -439,6 +461,241 @@ class _ProfileState extends State<Profile> {
           ),
           buildProfilePosts(),
         ],
+      ),
+    );
+  }
+}
+
+class FollowingListItem extends StatelessWidget {
+  final User following;
+
+  FollowingListItem({this.following}); 
+
+  handleUnfollow(){
+    //remove follower
+    followersRef
+        .document(following.id)
+        .collection('userFollowers')
+        .document(currentUser.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    //remove following
+    followingRef
+        .document(currentUser.id)
+        .collection('userFollowing')
+        .document(following.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    //delete activity feed item for them
+    activityFeedRef
+        .document(following.id)
+        .collection('feedItems')
+        .document(currentUser.id)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+        });
+  }
+
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          CircleAvatar(
+                      backgroundColor: Theme.of(context).accentColor,
+                      backgroundImage: CachedNetworkImageProvider(following.photoUrl),
+                    ),
+                    SizedBox(width: 8.0),
+                    Expanded(
+                      child: Text(
+                        following.username,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Raleway',
+                            fontWeight: FontWeight.bold
+                          ),
+                      ),
+                    ),
+                    SizedBox(width: 8.0),
+                    GestureDetector(
+                      onTap: () => handleUnfollow(),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(10.0)
+                          ),
+                          height: 40.0,
+                          width: 100.0,
+                          child: Center(
+                            child: Text(
+                              'Unfollow',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
+                                ),
+                            ),
+                          ),
+                      ),
+                    ),
+        ],
+      ),
+    );
+  }
+}
+
+class FollowDetail extends StatelessWidget {
+  User following;
+  String label;
+  int count;
+
+  FollowDetail({this.following, this.label, this.count});
+
+
+  getfollowDetail() {
+    if (label == 'following'){
+      return StreamBuilder<QuerySnapshot>(
+        stream: followingRef.document(currentUser.id)
+        .collection('userFollowing')
+        .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData){
+            return circularProgress();
+          } else if (snapshot.data.documents.length == 0){
+            return Container(
+          color: Colors.white,
+          child: Center(
+             child: Padding(
+               padding: const EdgeInsets.all(8.0),
+               child: Text(
+                'You aren\'t following anyone yet.',
+                style: TextStyle(
+                  fontFamily: 'Raleway',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontSize: 30.0
+                ),
+            ),
+             ),
+          )
+        );
+          } else {
+            List<FollowingListItem> followingList = [];
+            snapshot.data.documents.forEach((snap){
+              following = User.fromDocument(snap);
+              FollowingListItem followingListItem = FollowingListItem(following: following);
+              followingList.add(followingListItem);
+            });
+            return Container(
+              child: ListView(children: followingList),
+            );
+          }
+        },
+      );
+    }
+    else if (label == 'followers'){
+      print('get followers list');
+      return StreamBuilder<QuerySnapshot>(
+        stream: followersRef.document(currentUser.id)
+        .collection('userFollowers')
+        .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData){
+            return circularProgress();
+          } else if (snapshot.data.documents.length == 0){
+            return Container(
+          color: Colors.white,
+          child: Center(
+             child: Padding(
+               padding: const EdgeInsets.all(8.0),
+               child: Text(
+                'No one has followed you yet.',
+                style: TextStyle(
+                  fontFamily: 'Raleway',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontSize: 30.0
+                ),
+            ),
+             ),
+          )
+        );
+          } else {
+            List<FollowingListItem> followingList = [];
+            snapshot.data.documents.forEach((snap){
+              following = User.fromDocument(snap);
+              print(following.username);
+              FollowingListItem followingListItem = FollowingListItem(following: following);
+              followingList.add(followingListItem);
+            });
+            return Container(
+              child: ListView(children: followingList),
+            );
+          }
+        },
+      );
+    } else {
+      return;
+    }
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+          body: Container(
+            padding: EdgeInsets.all(40.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                Text(
+                  count.toString(),
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    fontFamily: 'Raleway',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: (){Navigator.pop(context);},
+                              child: Container(
+                                  margin: EdgeInsets.only(top: 4.0),
+                                  child: Text(
+                                    label,
+                                    style: TextStyle(
+              color: Colors.grey,
+              fontFamily: 'Raleway',
+              fontSize: 15.0,
+              fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                )
+          ],
+        ),
+            ),
+            Divider(color: Colors.black87,),
+            Expanded(
+              child: Container(child: getfollowDetail(),),
+            )
+          ],
+        ),
       ),
     );
   }
