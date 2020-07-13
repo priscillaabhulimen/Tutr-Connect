@@ -89,10 +89,11 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  GestureDetector buildCountColumn(String label, int count) {
-    return GestureDetector(
+  Widget buildCountColumn(String label, int count) {
+    bool isNotPosts = label != 'posts';
+    return isNotPosts ? GestureDetector(
       onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => FollowDetail(following: following, label: label, count: count)));
+           Navigator.push(context, MaterialPageRoute(builder: (context) => FollowDetail(following: following, label: label, count: count)));
         },
           child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -120,7 +121,32 @@ class _ProfileState extends State<Profile> {
             )
           ],
         ),
-    );
+    ): Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+        Text(
+          count.toString(),
+          style: TextStyle(
+            fontSize: 22.0,
+            fontFamily: 'Raleway',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 4.0),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey,
+              fontFamily: 'Raleway',
+              fontSize: 15.0,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+            )
+          ],
+        );
   }
 
 

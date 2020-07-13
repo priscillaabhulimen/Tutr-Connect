@@ -154,7 +154,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin<Uplo
      postsRef.document(widget.currentUser.id).snapshots().first.then((doc){
       //check if the created document has a field
       //if none, create one
-      print("Firestore first: $doc.data");
+      // print("Firestore first: $doc.data");
       if(doc.data == null){
         postsRef
         .document(widget.currentUser.id)

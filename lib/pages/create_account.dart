@@ -23,11 +23,10 @@ class _CreateAccountState extends State<CreateAccount> {
     if (form.validate()) {
       form.save();
       //display welcome message after user signs in
-      SnackBar snackBar = SnackBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        content: Text('Welcome $username!'),
+      SnackBar snackbar = SnackBar(
+        content: Text("Welcome $username!")
       );
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState.showSnackBar(snackbar);
       Timer(Duration(seconds: 2), () {
         Navigator.pop(context, username);
       });

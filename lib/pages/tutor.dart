@@ -56,7 +56,7 @@ class _TutorState extends State<Tutor> {
             student = User.fromDocument(snap);
             StudentResult studentResult = StudentResult(student, courseId);
             studentResults.add(studentResult);
-            print(studentResults);
+            // print(studentResults);
           });
           // print('reached');
           return Container(
