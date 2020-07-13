@@ -89,38 +89,38 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  Column buildCountColumn(String label, int count) {
-    return Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-      Text(
-        count.toString(),
-        style: TextStyle(
-          fontSize: 22.0,
-          fontFamily: 'Raleway',
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      GestureDetector(
-        onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => FollowDetail(following: following, label: label, count: count)));
-      },
-            child: Container(
-              margin: EdgeInsets.only(top: 4.0),
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontFamily: 'Raleway',
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+  GestureDetector buildCountColumn(String label, int count) {
+    return GestureDetector(
+      onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => FollowDetail(following: following, label: label, count: count)));
+        },
+          child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+        Text(
+          count.toString(),
+          style: TextStyle(
+            fontSize: 22.0,
+            fontFamily: 'Raleway',
+            fontWeight: FontWeight.bold,
           ),
-      )
-        ],
-      );
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 4.0),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey,
+              fontFamily: 'Raleway',
+              fontSize: 15.0,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+            )
+          ],
+        ),
+    );
   }
 
 
@@ -518,10 +518,16 @@ class FollowingListItem extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 8.0),
             child: Row(
               children: <Widget>[
-                CircleAvatar(
-                            backgroundColor: Theme.of(context).accentColor,
-                            backgroundImage: CachedNetworkImageProvider(following.photoUrl),
-                          ),
+                GestureDetector(
+                  onTap: (){
+                    Navigator.push(context,
+      MaterialPageRoute(builder: (context) => Profile(profileId: following.id)));
+                  },
+                                  child: CircleAvatar(
+                              backgroundColor: Theme.of(context).accentColor,
+                              backgroundImage: CachedNetworkImageProvider(following.photoUrl),
+                            ),
+                ),
                           SizedBox(width: 8.0),
                           Expanded(
                             child: Text(
@@ -614,7 +620,6 @@ class FollowDetail extends StatelessWidget {
       );
     }
     else if (label == 'followers'){
-      print('get followers list');
       return StreamBuilder<QuerySnapshot>(
         stream: followersRef.document(currentUser.id)
         .collection('userFollowers')
@@ -644,7 +649,6 @@ class FollowDetail extends StatelessWidget {
             List<FollowingListItem> followingList = [];
             snapshot.data.documents.forEach((snap){
               following = User.fromDocument(snap);
-              print(following.username);
               FollowingListItem followingListItem = FollowingListItem(following: following);
               followingList.add(followingListItem);
             });
@@ -664,47 +668,47 @@ class FollowDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
           body: Container(
-            color: Colors.grey.withOpacity(0.4),
+            color: Colors.grey.withOpacity(0.1),
             padding: EdgeInsets.all(40.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                Text(
-                  count.toString(),
-                  style: TextStyle(
-                    fontSize: 40.0,
-                    fontFamily: 'Raleway',
-                    fontWeight: FontWeight.bold,
+        child: GestureDetector(
+          onTap: (){Navigator.pop(context);},
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                  Text(
+                    count.toString(),
+                    style: TextStyle(
+                      fontSize: 40.0,
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: (){Navigator.pop(context);},
-                              child: Container(
-                                  margin: EdgeInsets.only(top: 4.0),
-                                  child: Text(
-                                    label,
-                                    style: TextStyle(
-              color: Colors.grey,
-              fontFamily: 'Raleway',
-              fontSize: 35.0,
-              fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                )
-          ],
-        ),
-            ),
-            Divider(color: Colors.black87,),
-            Expanded(
-              child: Container(child: getfollowDetail(),),
-            )
-          ],
+                  Container(
+                      margin: EdgeInsets.only(top: 4.0),
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontFamily: 'Raleway',
+                          fontSize: 35.0,
+                          fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              ),
+              Divider(color: Colors.black87,),
+              Expanded(
+                child: Container(child: getfollowDetail(),),
+              )
+            ],
+          ),
         ),
       ),
     );

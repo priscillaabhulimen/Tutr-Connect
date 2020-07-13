@@ -106,6 +106,20 @@ class _ChatsState extends State<Chats> {
       'receiverId': peerId,
       'messageType': 'receiving'
     });
+
+    activityFeedRef
+      .document(peerId)
+      .collection('feedItems')
+      .document(currentUser.id)
+      .setData({
+        'ownerId': peerId,
+        'type': 'message',
+        'userId': currentUser.id,
+        'commentData': messageController.text,
+        'userProfileImg': currentUser.photoUrl,
+        'username': currentUser.username,
+        'timestamp': DateTime.now(),
+      });
     messageController.clear();
   }
 
@@ -142,6 +156,18 @@ class _ChatsState extends State<Chats> {
       'receiverId': currentUser.id,
       'messageType': 'receiving'
     });
+    activityFeedRef
+      .document(currentUser.id)
+      .collection('feedItems')
+      .document(peerId)
+      .setData({
+        'ownerId': currentUser.id,
+        'type': 'message',
+        'userId': peerId,
+        'commentData': messageController.text,
+        'userProfileImg': peerAvatar,
+        'username': peerName
+      });
     messageController.clear();
   }
 

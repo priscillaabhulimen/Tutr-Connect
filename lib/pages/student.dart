@@ -193,7 +193,7 @@ class TutorResult extends StatelessWidget {
                     padding: EdgeInsets.only(left:16.0, top: 5.0, bottom: 5.0),
                     child: GestureDetector(
                       onTap: (){
-                        print('Sent request!');
+                        // print('Sent request!');
                         addRequestToActivityFeed();
                       },
                         child: Container(

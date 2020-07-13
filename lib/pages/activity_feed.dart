@@ -2,13 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:tutr_connect/models/user.dart';
-import 'package:tutr_connect/pages/chat/chat_screen.dart';
 import 'package:tutr_connect/pages/home.dart';
 import 'package:tutr_connect/pages/post_screen.dart';
 import 'package:tutr_connect/pages/profile.dart';
-import 'package:tutr_connect/pages/search.dart';
-import 'package:tutr_connect/pages/student.dart';
 import 'package:tutr_connect/widgets/header.dart';
 import 'package:tutr_connect/widgets/progress.dart';
 
@@ -59,7 +55,7 @@ String activityItemText;
 class ActivityFeedItem extends StatelessWidget {
   final String username;
   final String userId;
-  final String type; // 'like', 'follow', 'comment', 'request', 'accepted'
+  final String type; // 'like', 'follow', 'comment', 'request', 'accepted', 'message'
   final String mediaUrl;
   final String postId;
   final String userProfileImg;
@@ -175,6 +171,8 @@ class ActivityFeedItem extends StatelessWidget {
       activityItemText = 'needs a tutorial in $postId';
     } else if (type == 'accepted'){
       activityItemText = 'accepted your $postId request';
+    } else if (type == 'message'){
+      activityItemText = 'sent you a message';
     } else {
       activityItemText = "Error: Unknown type'$type'";
     }
