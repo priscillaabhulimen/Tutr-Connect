@@ -116,20 +116,23 @@ class _EditProfileState extends State<EditProfile> {
               value: '${snap.documentID}',
             ));
           }
-          return DropdownButton(
-            items: departmentItems,
-            onChanged: (departmentValue) {
-              setState(() {
-                selectedDepartment = departmentValue;
-              });
-            },
-            value: selectedDepartment,
-            isExpanded: false,
-            hint: new Text(
-              'Choose your department',
-              style: TextStyle(
-                  color: Colors.blueGrey,
-                  fontFamily: 'Raleway'),
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            child: DropdownButton(
+              items: departmentItems,
+              onChanged: (departmentValue) {
+                setState(() {
+                  selectedDepartment = departmentValue;
+                });
+              },
+              value: selectedDepartment,
+              isExpanded: false,
+              hint: new Text(
+                'Choose your department',
+                style: TextStyle(
+                    color: Colors.blueGrey,
+                    fontFamily: 'Raleway'),
+              ),
             ),
           );
         }
@@ -166,20 +169,23 @@ class _EditProfileState extends State<EditProfile> {
               value: '${snap.documentID}',
             ));
           }
-          return DropdownButton(
-            items: programItems,
-            onChanged: (programValue) {
-              setState(() {
-                selectedProgram = programValue;
-              });
-            },
-            value: selectedProgram,
-            isExpanded: false,
-            hint: new Text(
-              'Choose your program',
-              style: TextStyle(
-                  color: Colors.blueGrey,
-                  fontFamily: 'Raleway'),
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            child: DropdownButton(
+              items: programItems,
+              onChanged: (programValue) {
+                setState(() {
+                  selectedProgram = programValue;
+                });
+              },
+              value: selectedProgram,
+              isExpanded: false,
+              hint: new Text(
+                'Choose your program',
+                style: TextStyle(
+                    color: Colors.blueGrey,
+                    fontFamily: 'Raleway'),
+              ),
             ),
           );
         }
@@ -218,20 +224,23 @@ class _EditProfileState extends State<EditProfile> {
               value: '${snap.documentID}',
             ));
           }
-          return DropdownButton(
-            items: levelItems,
-            onChanged: (levelValue) {
-              setState(() {
-                selectedLevel = levelValue;
-              });
-            },
-            value: selectedLevel,
-            isExpanded: false,
-            hint: new Text(
-              'Choose your level',
-              style: TextStyle(
-                  color: Colors.blueGrey,
-                  fontFamily: 'Raleway'),
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            child: DropdownButton(
+              items: levelItems,
+              onChanged: (levelValue) {
+                setState(() {
+                  selectedLevel = levelValue;
+                });
+              },
+              value: selectedLevel,
+              isExpanded: false,
+              hint: new Text(
+                'Choose your level',
+                style: TextStyle(
+                    color: Colors.blueGrey,
+                    fontFamily: 'Raleway'),
+              ),
             ),
           );
         }
@@ -272,20 +281,23 @@ class _EditProfileState extends State<EditProfile> {
               value: '${snap.documentID}',
             ));
           }
-          return DropdownButton(
-            items: semesterItems,
-            onChanged: (semesterValue) {
-              setState(() {
-                selectedSemester = semesterValue;
-              });
-            },
-            value: selectedSemester,
-            isExpanded: false,
-            hint: new Text(
-              'Choose your current semester',
-              style: TextStyle(
-                  color: Colors.blueGrey,
-                  fontFamily: 'Raleway'),
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            child: DropdownButton(
+              items: semesterItems,
+              onChanged: (semesterValue) {
+                setState(() {
+                  selectedSemester = semesterValue;
+                });
+              },
+              value: selectedSemester,
+              isExpanded: false,
+              hint: new Text(
+                'Choose your current semester',
+                style: TextStyle(
+                    color: Colors.blueGrey,
+                    fontFamily: 'Raleway'),
+              ),
             ),
           );
         }
@@ -353,7 +365,7 @@ class _EditProfileState extends State<EditProfile> {
                     child: Column(
                       children: <Widget>[
                         Padding(
-                          padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
+                          padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
                           child: CircleAvatar(
                             radius: 50.0,
                             backgroundColor: Theme.of(context).accentColor,
@@ -362,7 +374,7 @@ class _EditProfileState extends State<EditProfile> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.all(16.0),
+                          padding: EdgeInsets.all(8.0),
                           child: Column(
                             children: <Widget>[
                               buildDisplayNameField(),
@@ -378,16 +390,30 @@ class _EditProfileState extends State<EditProfile> {
                             ],
                           ),
                         ),
-                        RaisedButton(
-                          onPressed: () => updateProfileData(),
-                          color: Theme.of(context).accentColor,
-                          child: Text(
-                            'Update Profile',
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontFamily: 'Raleway',
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
+                        GestureDetector(
+                          onTap: () => updateProfileData(),
+                          child: Container(
+                            margin: EdgeInsets.only(bottom: 10.0, left: 8.0, right: 8.0),
+                            height: 50.0,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Theme.of(context).primaryColor
+                              )
+                            ),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Update Profile',
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontFamily: 'Raleway',
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),

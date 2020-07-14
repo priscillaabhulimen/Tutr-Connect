@@ -33,7 +33,7 @@ class _ActivityFeedState extends State<ActivityFeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFEBFE),
+      backgroundColor: Colors.grey.withOpacity(0.3),
       appBar: header(context, titleText: 'Activity Feed'),
       body: FutureBuilder(
           future: getActivityFeed(),
@@ -185,7 +185,11 @@ class ActivityFeedItem extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 2.0),
       child: Container(
-        color: Colors.white54,
+        margin: EdgeInsets.only(bottom: 4.0, left: 4.0, right: 4.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15.0)
+        ),
         child: ListTile(
           title: GestureDetector(
             onTap: () => showProfile(context, profileId: userId),

@@ -88,7 +88,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  configurePushNotifications(){
+  Future configurePushNotifications() async{
     final GoogleSignInAccount user = googleSignIn.currentUser;
     if(Platform.isIOS) getiOSPermission();
 
@@ -108,6 +108,7 @@ class _HomeState extends State<Home> {
         final String body = message['notification']['body'];
         if(recipientId == user.id){
           // print('Notification shown!');
+          print (body);
           SnackBar snackBar = SnackBar(content: 
             Text(
               body, 
@@ -116,7 +117,9 @@ class _HomeState extends State<Home> {
           );
           _scaffoldKey.currentState.showSnackBar(snackBar);
         }
-        // print('Notification not shown.');
+        else{
+          print('Notification not shown.');
+        }
       },
     );
   }
