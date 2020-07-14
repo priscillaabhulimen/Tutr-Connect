@@ -26,8 +26,6 @@ class _ProfileState extends State<Profile> {
   final String currentUserId = currentUser?.id;
   String postOrientation = 'grid';
   bool isLoading = false;
-  User following;
-  User follower;
   int postCount = 0;
   int followerCount = 0;
   int followingCount = 0;
@@ -93,7 +91,7 @@ class _ProfileState extends State<Profile> {
     bool isNotPosts = label != 'posts';
     return isNotPosts ? GestureDetector(
       onTap: (){
-           Navigator.push(context, MaterialPageRoute(builder: (context) => FollowDetail(following: following, label: label, count: count)));
+           Navigator.push(context, MaterialPageRoute(builder: (context) => FollowDetail( profileId: widget.profileId, label: label, count: count)));
         },
           child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -164,20 +162,19 @@ class _ProfileState extends State<Profile> {
         onPressed: function,
         child: Container(
           width: 250.0,
-          height: 27.0,
+          height: 37.0,
           alignment: Alignment.center,
           child: Text(
             text,
             style: TextStyle(
-                color: isFollowing ? Colors.black : Colors.white,
+                color: isFollowing ? Colors.white : Colors.white,
                 fontFamily: 'Raleway',
                 fontWeight: FontWeight.bold),
           ),
           decoration: BoxDecoration(
-              color: isFollowing ? Colors.white : Theme.of(context).accentColor,
               border: Border.all(
                 color:
-                    isFollowing ? Colors.grey : Theme.of(context).accentColor,
+                    isFollowing ? Color(0xFF73DAFF) : Colors.blueGrey.withOpacity(0.4),
               ),
               borderRadius: BorderRadius.circular(5.0)),
         ),
@@ -301,66 +298,14 @@ class _ProfileState extends State<Profile> {
         User user = User.fromDocument(snapshot.data);
         return Padding(
           padding: EdgeInsets.only(top: 16.0, left: 16.0),
-          child: Column(
+          child: Row(
             children: <Widget>[
-              Row(
+              Column(
                 children: <Widget>[
                   CircleAvatar(
-                    radius: 50.0,
-                    backgroundColor: Theme.of(context).accentColor,
-                    backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            buildCountColumn('posts', postCount),
-                            buildCountColumn('followers', followerCount),
-                            buildCountColumn('following', followingCount),
-                          ],
-                        ),
-                        buildProfileButton(),
-                        isProfileOwner
-                            ? SizedBox(height: 10.0)
-                            : FlatButton(
-                                onPressed: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Chats(
-                                              peerAvatar: user.photoUrl,
-                                              peerName: user.username,
-                                              peerId: user.id,
-                                              messageOwnerId: currentUser.id,
-                                            ))),
-                                child: Container(
-                                  width: 250.0,
-                                  height: 27.0,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Send a message',
-                                    style: TextStyle(
-                                        color: isFollowing
-                                            ? Colors.black
-                                            : Colors.white,
-                                        fontFamily: 'Raleway',
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  decoration: BoxDecoration(
-                                      color: Theme.of(context).accentColor,
-                                      border: Border.all(
-                                        color: Theme.of(context).accentColor,
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0)),
-                                ),
-                              ),
-                      ],
-                    ),
-                  ),
-                ],
+                radius: 50.0,
+                backgroundColor: Theme.of(context).accentColor,
+                backgroundImage: CachedNetworkImageProvider(user.photoUrl),
               ),
               Container(
                   alignment: Alignment.centerLeft,
@@ -382,7 +327,56 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
-              
+                ],
+              ),
+              Expanded(
+                              child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        buildCountColumn('posts', postCount),
+                        buildCountColumn('followers', followerCount),
+                        buildCountColumn('following', followingCount),
+                      ],
+                    ),
+                    SizedBox(height: 5.0),
+                    buildProfileButton(),
+                    isProfileOwner
+                        ? SizedBox(height: 10.0)
+                        : FlatButton(
+                            onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Chats(
+                                          peerAvatar: user.photoUrl,
+                                          peerName: user.username,
+                                          peerId: user.id,
+                                          messageOwnerId: currentUser.id,
+                                        ))),
+                            child: Container(
+                              width: 250.0,
+                              height: 37.0,
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Send a message',
+                                style: TextStyle(
+                                    color: isFollowing
+                                        ? Colors.black
+                                        : Colors.white,
+                                      fontSize: 16.0,
+                                    fontFamily: 'Raleway',
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFF73DAFF).withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(5.0)),
+                            ),
+                          ),
+                  ],
+                ),
+              ),
             ],
           ),
         );
@@ -494,8 +488,10 @@ class _ProfileState extends State<Profile> {
 
 class FollowingListItem extends StatelessWidget {
   final User following;
+  final bool isUserProfile;
+  String profileId;
 
-  FollowingListItem({this.following}); 
+  FollowingListItem({this.following, this.isUserProfile}); 
 
   handleUnfollow(){
     //remove follower
@@ -533,7 +529,6 @@ class FollowingListItem extends StatelessWidget {
         });
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -547,7 +542,7 @@ class FollowingListItem extends StatelessWidget {
                 GestureDetector(
                   onTap: (){
                     Navigator.push(context,
-      MaterialPageRoute(builder: (context) => Profile(profileId: following.id)));
+                    MaterialPageRoute(builder: (context) => Profile(profileId: following.id)));
                   },
                                   child: CircleAvatar(
                               backgroundColor: Theme.of(context).accentColor,
@@ -566,7 +561,7 @@ class FollowingListItem extends StatelessWidget {
                             ),
                           ),
                           SizedBox(width: 8.0),
-                          GestureDetector(
+                          isUserProfile ? GestureDetector(
                             onTap: () => handleUnfollow(),
                               child: Container(
                                 decoration: BoxDecoration(
@@ -585,7 +580,8 @@ class FollowingListItem extends StatelessWidget {
                                   ),
                                 ),
                             ),
-                          ),
+                          )
+                          : Text(''),
               ],
             ),
           ),
@@ -598,16 +594,18 @@ class FollowingListItem extends StatelessWidget {
 
 class FollowDetail extends StatelessWidget {
   User following;
+  String profileId;
+  bool isUserProfile = false;
   String label;
   int count;
 
-  FollowDetail({this.following, this.label, this.count});
+  FollowDetail({this.profileId, this.label, this.count});
 
 
   getfollowDetail() {
     if (label == 'following'){
       return StreamBuilder<QuerySnapshot>(
-        stream: followingRef.document(currentUser.id)
+        stream: followingRef.document(profileId)
         .collection('userFollowing')
         .snapshots(),
         builder: (context, snapshot) {
@@ -635,7 +633,8 @@ class FollowDetail extends StatelessWidget {
             List<FollowingListItem> followingList = [];
             snapshot.data.documents.forEach((snap){
               following = User.fromDocument(snap);
-              FollowingListItem followingListItem = FollowingListItem(following: following);
+              isUserProfile = profileId == currentUser.id;
+              FollowingListItem followingListItem = FollowingListItem(following: following, isUserProfile: isUserProfile,);
               followingList.add(followingListItem);
             });
             return Container(
@@ -647,7 +646,7 @@ class FollowDetail extends StatelessWidget {
     }
     else if (label == 'followers'){
       return StreamBuilder<QuerySnapshot>(
-        stream: followersRef.document(currentUser.id)
+        stream: followersRef.document(profileId)
         .collection('userFollowers')
         .snapshots(),
         builder: (context, snapshot) {
@@ -675,7 +674,8 @@ class FollowDetail extends StatelessWidget {
             List<FollowingListItem> followingList = [];
             snapshot.data.documents.forEach((snap){
               following = User.fromDocument(snap);
-              FollowingListItem followingListItem = FollowingListItem(following: following);
+              isUserProfile = profileId == currentUser.id;
+              FollowingListItem followingListItem = FollowingListItem(following: following, isUserProfile: isUserProfile);
               followingList.add(followingListItem);
             });
             return Container(
