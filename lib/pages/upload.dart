@@ -24,25 +24,26 @@ class Upload extends StatefulWidget {
 class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin<Upload> {
   TextEditingController captionController = TextEditingController();
   File file;
+  final picker = ImagePicker();
   bool isUploading = false;
   String postId = Uuid().v4();
 
   Future handleTakePhoto() async {
     Navigator.pop(context);
-    File file = await ImagePicker.pickImage(
+    final pickedFile = await picker.getImage(
         source: ImageSource.camera, maxWidth: 800.0, maxHeight: 800.0);
     setState(() {
-      this.file = file;
+      this.file = File(pickedFile.path);
     });
   }
 
   Future handleChooseFromGallery() async {
     Navigator.pop(context);
-    File file = await ImagePicker.pickImage(
+    final pickedFile = await picker.getImage(
       source: ImageSource.gallery,
     );
     setState(() {
-      this.file = file;
+      this.file = File(pickedFile.path);
     });
   }
 

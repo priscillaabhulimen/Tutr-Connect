@@ -190,6 +190,8 @@ class _ChatsState extends State<Chats> {
             ),
             ListTile(
               title: TextFormField(
+                minLines: 1,
+                maxLines: 7,
                 controller: messageController,
                 decoration: InputDecoration(labelText: 'Write a message...'),
                 textCapitalization: TextCapitalization.sentences,

@@ -86,6 +86,9 @@ class CommentsState extends State<Comments> {
           Divider(),
           ListTile(
             title: TextFormField(
+              minLines: 1,
+              maxLines: 7,
+              expands: true,
               controller: commentController,
               decoration: InputDecoration(labelText: 'Write a comment...'),
             ),

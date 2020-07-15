@@ -167,11 +167,12 @@ class _ProfileState extends State<Profile> {
           child: Text(
             text,
             style: TextStyle(
-                color: isFollowing ? Colors.white : Colors.white,
+                color: isFollowing ? Color(0xFF73DAFF) : Colors.white,
                 fontFamily: 'Raleway',
                 fontWeight: FontWeight.bold),
           ),
           decoration: BoxDecoration(
+              color: isFollowing ? Colors.white : Color(0xFF73DAFF),
               border: Border.all(
                 color:
                     isFollowing ? Color(0xFF73DAFF) : Colors.blueGrey.withOpacity(0.4),
@@ -362,15 +363,13 @@ class _ProfileState extends State<Profile> {
                               child: Text(
                                 'Send a message',
                                 style: TextStyle(
-                                    color: isFollowing
-                                        ? Colors.black
-                                        : Colors.white,
+                                    color:  Colors.white,
                                       fontSize: 16.0,
                                     fontFamily: 'Raleway',
                                     fontWeight: FontWeight.bold),
                               ),
                               decoration: BoxDecoration(
-                                  color: Color(0xFF73DAFF).withOpacity(0.5),
+                                  color: Color(0xFF73DAFF),
                                   borderRadius: BorderRadius.circular(5.0)),
                             ),
                           ),
@@ -593,11 +592,10 @@ class FollowingListItem extends StatelessWidget {
 }
 
 class FollowDetail extends StatelessWidget {
-  User following;
-  String profileId;
+  final String profileId;
   bool isUserProfile = false;
-  String label;
-  int count;
+  final String label;
+  final int count;
 
   FollowDetail({this.profileId, this.label, this.count});
 
@@ -632,7 +630,7 @@ class FollowDetail extends StatelessWidget {
           } else {
             List<FollowingListItem> followingList = [];
             snapshot.data.documents.forEach((snap){
-              following = User.fromDocument(snap);
+              User following = User.fromDocument(snap);
               isUserProfile = profileId == currentUser.id;
               FollowingListItem followingListItem = FollowingListItem(following: following, isUserProfile: isUserProfile,);
               followingList.add(followingListItem);
@@ -673,7 +671,7 @@ class FollowDetail extends StatelessWidget {
           } else {
             List<FollowingListItem> followingList = [];
             snapshot.data.documents.forEach((snap){
-              following = User.fromDocument(snap);
+              User following = User.fromDocument(snap);
               isUserProfile = profileId == currentUser.id;
               FollowingListItem followingListItem = FollowingListItem(following: following, isUserProfile: isUserProfile);
               followingList.add(followingListItem);
