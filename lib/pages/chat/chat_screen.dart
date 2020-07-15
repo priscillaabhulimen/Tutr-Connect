@@ -23,7 +23,7 @@ class Chats extends StatefulWidget {
       );
 }
 
-class _ChatsState extends State<Chats> {
+class _ChatsState extends State<Chats> with AutomaticKeepAliveClientMixin<Chats> {
   final String peerName;
   final String peerId;
   final String peerAvatar;
@@ -64,7 +64,9 @@ class _ChatsState extends State<Chats> {
           } else {
             List<Message> messages = [];
             snapshot.data.documents.forEach((doc) {
-              messages.add(Message.fromDocument(doc));
+              messages.add(
+                Message.fromDocument(doc)
+              );
             });
             return ListView(
               children: messages,
@@ -171,8 +173,11 @@ class _ChatsState extends State<Chats> {
     messageController.clear();
   }
 
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -183,7 +188,8 @@ class _ChatsState extends State<Chats> {
         ),
         body: Column(
           children: <Widget>[
-            Expanded(child: buildMessages()),
+            Expanded(
+              child: buildMessages()),
             Divider(
               height: 2.0,
               color: Colors.grey,
@@ -237,51 +243,44 @@ class Message extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: messageType == 'sending'
-          ? CrossAxisAlignment.end
-          : CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          margin: messageType == 'sending'
-              ? EdgeInsets.only(left: 40.0, top: 10.0)
-              : EdgeInsets.only(right: 40.0, top: 10.0),
-          decoration: BoxDecoration(
-              color: messageType == 'sending'
-                  ? Color(0xFFB0E0E6)
-                  : Colors.blueGrey.withOpacity(0.4),
-              borderRadius: messageType == 'sending'
-                  ? BorderRadius.only(
-                      topLeft: Radius.circular(25.0),
-                      bottomLeft: Radius.circular(25.0))
-                  : BorderRadius.only(
-                      topRight: Radius.circular(25.0),
-                      bottomRight: Radius.circular(25.0))),
-          child: ListTile(
-            leading: messageType == 'sending'
-                ? CircleAvatar(
-                    backgroundImage: CachedNetworkImageProvider(senderAvatar),
-                  )
-                : Text(timeago.format(timestamp.toDate()),
-                    style: TextStyle(fontSize: 10.0, fontFamily: 'Raleway')),
-            title: Text(
-              message,
-              style: TextStyle(
-                  fontSize: 12.0,
-                  fontFamily: 'Raleway',
-                  fontWeight: FontWeight.bold),
-            ),
-            trailing: messageType == 'sending'
-                ? Text(
-                    timeago.format(timestamp.toDate()),
-                    style: TextStyle(fontSize: 10.0, fontFamily: 'Raleway'),
-                  )
-                : CircleAvatar(
-                    backgroundImage: CachedNetworkImageProvider(senderAvatar),
-                  ),
-          ),
-        )
-      ],
+    return Container(
+      margin: messageType == 'sending'
+          ? EdgeInsets.only(left: 40.0, top: 10.0)
+          : EdgeInsets.only(right: 40.0, top: 10.0),
+      decoration: BoxDecoration(
+          color: messageType == 'sending'
+              ? Color(0xFFB0E0E6)
+              : Colors.blueGrey.withOpacity(0.4),
+          borderRadius: messageType == 'sending'
+              ? BorderRadius.only(
+                  topLeft: Radius.circular(25.0),
+                  bottomLeft: Radius.circular(25.0))
+              : BorderRadius.only(
+                  topRight: Radius.circular(25.0),
+                  bottomRight: Radius.circular(25.0))),
+      child: ListTile(
+        leading: messageType == 'sending'
+            ? CircleAvatar(
+                backgroundImage: CachedNetworkImageProvider(senderAvatar),
+              )
+            : Text(timeago.format(timestamp.toDate()),
+                style: TextStyle(fontSize: 10.0, fontFamily: 'Raleway')),
+        title: Text(
+          message,
+          style: TextStyle(
+              fontSize: 12.0,
+              fontFamily: 'Raleway',
+              fontWeight: FontWeight.bold),
+        ),
+        trailing: messageType == 'sending'
+            ? Text(
+                timeago.format(timestamp.toDate()),
+                style: TextStyle(fontSize: 10.0, fontFamily: 'Raleway'),
+              )
+            : CircleAvatar(
+                backgroundImage: CachedNetworkImageProvider(senderAvatar),
+              ),
+      ),
     );
   }
 }
