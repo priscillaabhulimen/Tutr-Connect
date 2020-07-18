@@ -109,8 +109,8 @@ class CourseViewItem extends StatelessWidget {
   Future <bool> isRegistered;
   Future <bool> isStudent;
   bool isTutor = false;
-  bool studStatus;
-  bool regStatus;
+  bool studStatus = false;
+  bool regStatus= false;
    String courseId;
 
   CourseViewItem({

@@ -113,6 +113,7 @@ class _StudentState extends State<Student> {
 class TutorResult extends StatelessWidget {
   final User tutor;
   final String courseId;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   TutorResult(this.tutor, this.courseId);
 
@@ -195,6 +196,12 @@ class TutorResult extends StatelessWidget {
                       onTap: (){
                         // print('Sent request!');
                         addRequestToActivityFeed();
+                        Scaffold.of(context).showSnackBar(SnackBar(content: 
+                          Text(
+                            'Your request has been sent!', 
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ));
                       },
                         child: Container(
                           decoration: BoxDecoration(

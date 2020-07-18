@@ -117,27 +117,75 @@ class ActivityFeedItem extends StatelessWidget {
     } else if(type == 'request'){
       mediaPreview = GestureDetector(
                       onTap: () {
-                        courseRef
-                        .document(postId)
-                        .collection('Tutors')
-                        .document(currentUser.id)
-                        .collection('Students')
-                        .document(userId)
-                        .setData({
-                          'id': userId,
-                          'username': username,
-                          'photoUrl': userProfileImg
-                        });
-                        activityFeedRef.document(userId).collection('feedItems').add({
-                          'type': 'accepted',
-                          'studentId': userId,
-                          'postId': postId,
-                          'username': currentUser.username,
-                          'userId': currentUser.id,
-                          'userProfileImg': currentUser.photoUrl,
-                          'timestamp': DateTime.now()
-                        });
-                        showProfile(context, profileId: userId);
+                        showDialog(
+                          context: context,
+                          builder: (context){
+                            return SimpleDialog(
+                              title: Text('I would like to...'),
+                              children: <Widget>[
+                                SimpleDialogOption(
+                                  child: Text('Accept'),
+                                  onPressed: (){
+                                    courseRef
+                                    .document(postId)
+                                    .collection('Tutors')
+                                    .document(currentUser.id)
+                                    .collection('Students')
+                                    .document(userId)
+                                    .setData({
+                                      'id': userId,
+                                      'username': username,
+                                      'photoUrl': userProfileImg
+                                    });
+                                    activityFeedRef.document(userId).collection('feedItems').add({
+                                      'type': 'accepted',
+                                      'studentId': userId,
+                                      'postId': postId,
+                                      'username': currentUser.username,
+                                      'userId': currentUser.id,
+                                      'userProfileImg': currentUser.photoUrl,
+                                      'timestamp': DateTime.now()
+                                    });
+                                    Navigator.pop(context);
+                                    Scaffold.of(context).showSnackBar(SnackBar(content: 
+                                      Text(
+                                        'You accepted the request!', 
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    )); 
+                                  }
+                                ),
+                                Divider(
+                                  height: 2.0,
+                                ),
+                                SimpleDialogOption(
+                                  child: Text(
+                                    'Decline',
+                                    style: TextStyle(color: Colors.red)
+                                  ),
+                                  onPressed: (){
+                                    activityFeedRef.document(userId).collection('feedItems').add({
+                                      'type': 'declined',
+                                      'studentId': userId,
+                                      'postId': postId,
+                                      'username': currentUser.username,
+                                      'userId': currentUser.id,
+                                      'userProfileImg': currentUser.photoUrl,
+                                      'timestamp': DateTime.now()
+                                    });
+                                    Navigator.pop(context);
+                                    Scaffold.of(context).showSnackBar(SnackBar(content: 
+                                      Text(
+                                        'You declined the request!', 
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ));
+                                  },
+                                )
+                              ],
+                            );
+                          }
+                        );
                       },
                         child: Container(
                           decoration: BoxDecoration(
@@ -148,7 +196,7 @@ class ActivityFeedItem extends StatelessWidget {
                           width: 60.0,
                           child: Center(
                             child: Text(
-                              'Accept',
+                              'Respond',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold
@@ -171,6 +219,8 @@ class ActivityFeedItem extends StatelessWidget {
       activityItemText = 'needs a tutorial in $postId';
     } else if (type == 'accepted'){
       activityItemText = 'accepted your $postId request';
+    }else if (type == 'declined'){
+      activityItemText = 'declined your $postId request';
     } else if (type == 'message'){
       activityItemText = 'sent you a message';
     } else {

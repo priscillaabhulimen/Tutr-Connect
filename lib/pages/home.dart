@@ -103,18 +103,19 @@ class _HomeState extends State<Home> {
       // onLaunch: (Map<String, dynamic> message) async{},
       // onResume: (Map<String, dynamic> message) async{},
       onMessage: (Map<String, dynamic> message) async{
-        print('on message: $message\n');
+        // print('on message: $message\n');
         final String recipientId = message['data']['recipient'];
         final String body = message['notification']['body'];
         if(recipientId == user.id){
-          print('Notification shown!');
-          print (body);
+          // print('Notification shown!');
+          // print (body);
           SnackBar snackBar = SnackBar(content: 
             Text(
               body, 
               overflow: TextOverflow.ellipsis,
             ),
           );
+          print(body);
           _scaffoldKey.currentState.showSnackBar(snackBar);
         }
         else{
